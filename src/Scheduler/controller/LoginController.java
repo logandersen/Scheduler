@@ -2,11 +2,18 @@ package Scheduler.controller;
 import Scheduler.DAO.DBConnector;
 import Scheduler.DAO.DBService;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 
 import javafx.event.ActionEvent;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,17 +32,27 @@ public class LoginController implements Initializable{
     @FXML
     private Label Zone;
 
-    private Connection conn;
+    private static Connection conn;
     private Locale locale;
+    private ResourceBundle rs;
 
     @FXML
-    private void login(ActionEvent event) throws SQLException {
+    private void login(ActionEvent event) throws SQLException, IOException {
         ErrorText.setVisible(false);
         var username = Username.getText();
         var password= Password.getText();
         var authenticated = DBService.authenticate(conn,username,password);
         if(authenticated){
             System.out.println("Authenticated");
+            FXMLLoader custListLoader = new FXMLLoader();
+            custListLoader.setLocation(getClass().getResource("../view/CustomerList.fxml"));
+            custListLoader.setResources(rs);
+            Parent custListParent = custListLoader.load();
+
+            Scene partScene = new Scene(custListParent);
+            Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            appStage.setScene(partScene);
+            appStage.show();
         }
         else{
             ErrorText.setVisible(true);
@@ -44,13 +61,14 @@ public class LoginController implements Initializable{
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        this.rs = resourceBundle;
         Zone.setText(ZoneId.systemDefault().toString());
-        conn = DBConnector.connectToDB();
     }
 
     public void setConn(Connection conn) {
         this.conn = conn;
     }
+    public static Connection getConn(){return conn;}
 
     public void setLocale(Locale locale) {
         this.locale = locale;
