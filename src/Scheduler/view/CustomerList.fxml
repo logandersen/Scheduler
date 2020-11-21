@@ -14,17 +14,17 @@
             <Font size="36.0" />
          </font>
       </Label>
-      <Button layoutX="694.0" layoutY="37.0" mnemonicParsing="false" text="%custList.Add" />
+      <Button layoutX="694.0" layoutY="37.0" mnemonicParsing="false" text="%custList.Add" onAction="#newCustomer"/>
       <TableView fx:id="customerTableView" layoutX="35.0" layoutY="115.0" prefHeight="603.0" prefWidth="795.0">
          <columns>
-            <TableColumn text="Name" fx:id="customerName"/>
-            <TableColumn text="Address" fx:id="address"/>
-            <TableColumn text="Postal Code" fx:id="postalCode"/>
-            <TableColumn text="Phone" fx:id="phone"/>
-            <TableColumn text="Division" fx:id="division"/>
-            <TableColumn text="Country" fx:id="country"/>
-            <TableColumn text="Created On" fx:id="createdDate"/>
-            <TableColumn text="Created By" fx:id="createdBy"/>
+            <TableColumn text="%custList.Name" fx:id="customerName"/>
+            <TableColumn text="%custList.Address" fx:id="address"/>
+            <TableColumn text="%custList.PostalCode" fx:id="postalCode"/>
+            <TableColumn text="%custList.Phone" fx:id="phone"/>
+            <TableColumn text="%custList.Division" fx:id="division"/>
+            <TableColumn text="%custList.Country" fx:id="country"/>
+            <TableColumn text="%custList.CreatedOn" fx:id="createdDate"/>
+            <TableColumn text="%custList.CreatedBy" fx:id="createdBy"/>
          </columns>
       </TableView>
    </children>

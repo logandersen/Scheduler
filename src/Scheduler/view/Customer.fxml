@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="571.0" prefWidth="354.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Scheduler.controller.CustomerController">
+   <children>
+      <Label layoutX="26.0" layoutY="26.0" text="%cust.Title">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="90.0" prefHeight="17.0" prefWidth="69.0" text="%cust.ID" />
+      <TextField fx:id="Id" layoutX="139.0" layoutY="86.0" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="129.0" prefHeight="17.0" prefWidth="69.0" text="%cust.Name" />
+      <TextField fx:id="Name" layoutX="139.0" layoutY="125.0" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="168.0" prefHeight="17.0" prefWidth="69.0" text="%cust.Phone" />
+      <TextField fx:id="Phone" layoutX="139.0" layoutY="164.0" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="207.0" prefHeight="17.0" prefWidth="69.0" text="%cust.Address" />
+      <TextField fx:id="Address" layoutX="139.0" layoutY="203.0" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="247.0" prefHeight="17.0" prefWidth="69.0" text="%cust.PostalCode" />
+      <TextField fx:id="PostalCode" layoutX="139.0" layoutY="243.0" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="365.0" prefHeight="17.0" prefWidth="69.0" text="%cust.CreatedOn" />
+      <Label fx:id="CreatedOn" layoutX="139.0" layoutY="365.0" text="" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="404.0" prefHeight="17.0" prefWidth="69.0" text="%cust.CreatedBy" />
+      <Label fx:id="CreatedBy" layoutX="139.0" layoutY="404.0" text="" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="442.0" prefHeight="17.0" prefWidth="69.0" text="%cust.LastUpdated" />
+      <Label fx:id="LastUpdated" layoutX="139.0" layoutY="442.0" text="" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="481.0" prefHeight="17.0" prefWidth="69.0" text="%cust.LastUpdatedBy" />
+      <Label fx:id="LastUpdatedBy" layoutX="139.0" layoutY="481.0" text="" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="286.0" prefHeight="17.0" prefWidth="69.0" text="%cust.Division" />
+      <ComboBox fx:id="Division" layoutX="139.0" layoutY="282.0" prefWidth="150.0" />
+
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="325.0" prefHeight="17.0" prefWidth="69.0" text="%cust.Country" />
+      <ComboBox fx:id="Country" layoutX="139.0" layoutY="321.0" prefWidth="150.0" />
+
+      <Button layoutX="237.0" layoutY="526.0" mnemonicParsing="false" text="%cust.Cancel" />
+      <Button layoutX="139.0" layoutY="526.0" mnemonicParsing="false" text="%cust.Update" />
+
+
+
+
+   </children>
+</AnchorPane>
