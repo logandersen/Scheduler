@@ -41,14 +41,14 @@
       <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="481.0" prefHeight="17.0" prefWidth="69.0" text="%cust.LastUpdatedBy" />
       <Label fx:id="LastUpdatedBy" layoutX="139.0" layoutY="481.0" text="" />
 
-      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="286.0" prefHeight="17.0" prefWidth="69.0" text="%cust.Division" />
-      <ComboBox fx:id="Division" layoutX="139.0" layoutY="282.0" prefWidth="150.0" />
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="286.0" prefHeight="17.0" prefWidth="69.0" text="%cust.Country" />
+      <ComboBox fx:id="CountryCB" layoutX="139.0" layoutY="282.0" prefWidth="150.0" onAction="#countrySelected"/>
 
-      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="325.0" prefHeight="17.0" prefWidth="69.0" text="%cust.Country" />
-      <ComboBox fx:id="Country" layoutX="139.0" layoutY="321.0" prefWidth="150.0" />
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="325.0" prefHeight="17.0" prefWidth="69.0" text="%cust.Division" />
+      <ComboBox fx:id="DivisionCB" layoutX="139.0" layoutY="321.0" prefWidth="150.0" />
 
-      <Button layoutX="237.0" layoutY="526.0" mnemonicParsing="false" text="%cust.Cancel" />
-      <Button layoutX="139.0" layoutY="526.0" mnemonicParsing="false" text="%cust.Update" />
+      <Button layoutX="237.0" layoutY="526.0" mnemonicParsing="false" text="%cust.Cancel" onAction="#cancel" />
+      <Button layoutX="139.0" layoutY="526.0" mnemonicParsing="false" text="%cust.Update" onAction="#update"/>
 
 
 

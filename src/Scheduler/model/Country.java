@@ -10,8 +10,11 @@ public class Country {
     public String createdBy;
     public Timestamp lastUpdate;
     public String lastUpdatedBy;
-    public int countryID;
 
     public void Country() {
+    }
+    @Override
+    public String toString(){
+        return(name);
     }
 }

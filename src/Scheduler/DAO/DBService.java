@@ -2,16 +2,17 @@ package Scheduler.DAO;
 import Scheduler.model.Country;
 import Scheduler.model.Customer;
 import Scheduler.model.Division;
+import Scheduler.model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.Date;
 
 
 public class DBService {
+
+    private static String Username;
 
     public static boolean authenticate(Connection conn, String username, String password) throws SQLException{
         String qry = "SELECT * FROM users WHERE User_Name = ? AND Password = ?";
@@ -26,9 +27,13 @@ public class DBService {
             // Get data from the current row and use it
         }
         if(count == 1){
+            Username = username;
             return true;
         }
         return false;
+    }
+    public static String getUserName(){
+        return Username;
     }
     public static ObservableList<Customer> getAllCustomers(Connection conn) throws SQLException {
         String qry = "SELECT * FROM customers";
@@ -60,6 +65,21 @@ public class DBService {
         }
         return customers;
     }
+
+    public static void updateCustomer(Connection conn, Customer customer) throws SQLException {
+        String qry = "UPDATE customers SET Customer_Name=?,Address=?,Phone=?,Postal_Code=?,Last_Update=?,Last_Updated_By=?,Division_ID=?;";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.setString(1,customer.customerName);
+        statement.setString(2,customer.address);
+        statement.setString(3, customer.phone);
+        statement.setString(4, customer.postalCode);
+        var utilDate = new java.util.Date();
+        statement.setDate(5, new java.sql.Date(utilDate.getTime()));
+        statement.setString(6,customer.lastUpdatedBy);
+        statement.setInt(7,customer.divisionID);
+
+        statement.execute();
+    }
     private static Division getDivision(Connection conn, int id) throws SQLException {
         String qry = "SELECT * FROM first_level_divisions WHERE Division_ID = ?";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -72,6 +92,21 @@ public class DBService {
         division.countryID = rs.getInt("COUNTRY_ID");
         return division;
     };
+    public static ObservableList<Division> getAllDivisions(Connection conn) throws SQLException{
+        String qry = "SELECT * FROM first_level_divisions";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.execute();
+        var rs = statement.getResultSet();
+        ObservableList<Division> Divisions = FXCollections.observableArrayList();
+        while(rs.next()){
+            var div = new Division();
+            div.id = rs.getInt("Division_ID");
+            div.name = rs.getString("Division");
+            div.countryID = rs.getInt("COUNTRY_ID");
+            Divisions.add(div);
+        }
+        return Divisions;
+    }
     private static Country getCountry(Connection conn, int id) throws SQLException {
         String qry = "SELECT * FROM countries WHERE Country_ID = ?";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -83,4 +118,18 @@ public class DBService {
         country.name = rs.getString("Country");
         return country;
     };
+    public static ObservableList<Country> getAllCountries(Connection conn) throws SQLException{
+        String qry = "SELECT * FROM countries";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.execute();
+        var rs = statement.getResultSet();
+        ObservableList<Country> countries = FXCollections.observableArrayList();
+        while(rs.next()){
+            var country = new Country();
+            country.id = rs.getInt("Country_ID");
+            country.name = rs.getString("Country");
+            countries.add(country);
+        }
+        return countries;
+    }
 }

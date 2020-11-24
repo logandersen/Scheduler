@@ -14,4 +14,8 @@ public class Division {
 
     public void Division() {
     }
+    @Override
+    public String toString(){
+        return(name);
+    }
 }
