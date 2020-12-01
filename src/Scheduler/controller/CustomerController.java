@@ -14,9 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -25,6 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CustomerController implements Initializable{
@@ -119,7 +118,7 @@ public class CustomerController implements Initializable{
         for(Division div: divisions){
             if(div.countryID == selectedCountry.id) {
                 filterDivs.add(div);
-                if(div.id == customer.divisionID){
+                if(customer != null && div.id == customer.divisionID){
                     selectedDiv = div;
                 }
             }
@@ -136,10 +135,37 @@ public class CustomerController implements Initializable{
     private void cancel(ActionEvent event) throws IOException {
         loadCustomerList(event);
     }
+    @FXML
+    private void delete(ActionEvent event) throws Exception{
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText(rs.getString("cust.DeleteText"));
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get() != ButtonType.OK){return;}
+
+        var deleted = DBService.deleteCustomer(conn,customer);
+        if(deleted){
+            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText(rs.getString("cust.Deleted"));
+            alert.showAndWait();
+            loadCustomerList(event);
+        }
+        else{
+            Alert failAlert = new Alert(Alert.AlertType.ERROR);
+            failAlert.setContentText(rs.getString("cust.DeleteFailed"));
+            failAlert.show();
+        }
+    }
 
     @FXML
+    private void upsert(ActionEvent event) throws  Exception{
+        if(pageType == "Edit"){
+            update(event);
+        }
+        else {
+            saveNew(event);
+        }
+    }
     private void update(ActionEvent event) throws Exception{
-        //TODO: Save event
         var updateCust = new Customer();
         updateCust.customerName = Name.getText();
         updateCust.phone =  Phone.getText();
@@ -147,7 +173,21 @@ public class CustomerController implements Initializable{
         updateCust.postalCode = PostalCode.getText();
         updateCust.divisionID = DivisionCB.getValue().id;
         updateCust.lastUpdatedBy = DBService.getUserName();
+        updateCust.id = Integer.parseInt(Id.getText());
         DBService.updateCustomer(conn,updateCust);
+        loadCustomerList(event);
+    }
+    private void saveNew(ActionEvent event) throws Exception{
+        var userName = DBService.getUserName();
+        var newCust = new Customer();
+        newCust.customerName = Name.getText();
+        newCust.phone =  Phone.getText();
+        newCust.address = Address.getText();
+        newCust.postalCode = PostalCode.getText();
+        newCust.divisionID = DivisionCB.getValue().id;
+        newCust.lastUpdatedBy = userName;
+        newCust.createdBy = userName;
+        DBService.insertCustomer(conn,newCust);
         loadCustomerList(event);
     }
 

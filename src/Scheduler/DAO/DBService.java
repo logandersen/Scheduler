@@ -5,6 +5,7 @@ import Scheduler.model.Division;
 import Scheduler.model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 
 import java.sql.*;
 import java.util.Date;
@@ -15,7 +16,7 @@ public class DBService {
     private static String Username;
 
     public static boolean authenticate(Connection conn, String username, String password) throws SQLException{
-        String qry = "SELECT * FROM users WHERE User_Name = ? AND Password = ?";
+        String qry = "SELECT * FROM users WHERE User_Name = ? AND BINARY Password = ?";
         PreparedStatement statement = conn.prepareStatement(qry);
         statement.setString(1,username);
         statement.setString(2,password);
@@ -67,7 +68,7 @@ public class DBService {
     }
 
     public static void updateCustomer(Connection conn, Customer customer) throws SQLException {
-        String qry = "UPDATE customers SET Customer_Name=?,Address=?,Phone=?,Postal_Code=?,Last_Update=?,Last_Updated_By=?,Division_ID=?;";
+        String qry = "UPDATE customers SET Customer_Name=?,Address=?,Phone=?,Postal_Code=?,Last_Update=?,Last_Updated_By=?,Division_ID=? WHERE Customer_ID =?;";
         PreparedStatement statement = conn.prepareStatement(qry);
         statement.setString(1,customer.customerName);
         statement.setString(2,customer.address);
@@ -77,8 +78,36 @@ public class DBService {
         statement.setDate(5, new java.sql.Date(utilDate.getTime()));
         statement.setString(6,customer.lastUpdatedBy);
         statement.setInt(7,customer.divisionID);
+        statement.setInt(8,customer.id);
 
         statement.execute();
+    }
+    public static void insertCustomer(Connection conn, Customer customer) throws SQLException {
+        String qry = "INSERT INTO customers (Customer_Name,Address,Phone,Postal_Code,Create_Date,Created_By,Last_Update,Last_Updated_By,Division_ID) " +
+                "VALUES(?,?,?,?,?,?,?,?,?)";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.setString(1,customer.customerName);
+        statement.setString(2,customer.address);
+        statement.setString(3, customer.phone);
+        statement.setString(4, customer.postalCode);
+        var utilDate = new java.util.Date();
+        statement.setTimestamp(5,new Timestamp(System.currentTimeMillis()));
+        statement.setString(6,customer.createdBy);
+        statement.setDate(7, new java.sql.Date(utilDate.getTime()));
+        statement.setString(8,customer.lastUpdatedBy);
+        statement.setInt(9,customer.divisionID);
+
+        statement.execute();
+}
+    public static boolean deleteCustomer(Connection conn, Customer customer) throws SQLException{
+        String qry = "DELETE FROM customers WHERE Customer_ID =?";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.setInt(1,customer.id);
+        statement.execute();
+        if(statement.getUpdateCount() > 0){
+           return true;
+        };
+        return false;
     }
     private static Division getDivision(Connection conn, int id) throws SQLException {
         String qry = "SELECT * FROM first_level_divisions WHERE Division_ID = ?";

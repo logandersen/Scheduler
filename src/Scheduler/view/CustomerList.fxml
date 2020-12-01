@@ -2,30 +2,71 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.control.TableView?>
 
-<?import javafx.scene.control.TableColumn?>
-<AnchorPane fx:controller="Scheduler.controller.CustomerListController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="751.0" prefWidth="867.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="751.0" prefWidth="867.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Scheduler.controller.CustomerListController">
    <children>
-      <Label layoutX="23.0" layoutY="23.0" text="%custList.heading">
-         <font>
-            <Font size="36.0" />
-         </font>
-      </Label>
-      <Button layoutX="694.0" layoutY="37.0" mnemonicParsing="false" text="%custList.Add" onAction="#newCustomer"/>
-      <TableView fx:id="customerTableView" layoutX="35.0" layoutY="115.0" prefHeight="603.0" prefWidth="795.0">
-         <columns>
-            <TableColumn text="%custList.Name" fx:id="customerName"/>
-            <TableColumn text="%custList.Address" fx:id="address"/>
-            <TableColumn text="%custList.PostalCode" fx:id="postalCode"/>
-            <TableColumn text="%custList.Phone" fx:id="phone"/>
-            <TableColumn text="%custList.Division" fx:id="division"/>
-            <TableColumn text="%custList.Country" fx:id="country"/>
-            <TableColumn text="%custList.CreatedOn" fx:id="createdDate"/>
-            <TableColumn text="%custList.CreatedBy" fx:id="createdBy"/>
-         </columns>
-      </TableView>
+      <TabPane prefHeight="751.0" prefWidth="867.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="%custList.Tab">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="customerTableView" layoutX="36.0" layoutY="80.0" prefHeight="603.0" prefWidth="795.0">
+                           <columns>
+                              <TableColumn fx:id="customerName" text="%custList.Name" />
+                              <TableColumn fx:id="address" text="%custList.Address" />
+                              <TableColumn fx:id="postalCode" text="%custList.PostalCode" />
+                              <TableColumn fx:id="phone" text="%custList.Phone" />
+                              <TableColumn fx:id="division" text="%custList.Division" />
+                              <TableColumn fx:id="country" text="%custList.Country" />
+                              <TableColumn fx:id="createdDate" text="%custList.CreatedOn" />
+                              <TableColumn fx:id="createdBy" text="%custList.CreatedBy" />
+                           </columns>
+                        </TableView>
+                        <Button layoutX="706.0" layoutY="28.0" mnemonicParsing="false" onAction="#newCustomer" text="%custList.Add" />
+                        <Label layoutX="36.0" layoutY="14.0" text="%custList.heading">
+                           <font>
+                              <Font size="36.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="%apptList.Tab">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <TableView fx:id="appointmentTableView" layoutX="36.0" layoutY="80.0" prefHeight="603.0" prefWidth="795.0">
+                            <columns>
+                                <TableColumn fx:id="apptId" text="%apptList.apptId" />
+                                <TableColumn fx:id="title" text="%apptList.title" />
+                                <TableColumn fx:id="description" text="%apptList.desc" />
+                                <TableColumn fx:id="location" text="%apptList.location" />
+                                <TableColumn fx:id="contact" text="%apptList.contact" />
+                                <TableColumn fx:id="type" text="%apptList.type" />
+                                <TableColumn fx:id="start" text="%apptList.start" />
+                                <TableColumn fx:id="end" text="%apptList.end" />
+                                <TableColumn fx:id="customerId" text="%apptList.custId" />
+                            </columns>
+                        </TableView>
+                        <Button layoutX="706.0" layoutY="28.0" mnemonicParsing="false" onAction="#newCustomer" text="%apptList.add" />
+                        <Label layoutX="36.0" layoutY="14.0" text="%apptList.heading">
+                            <font>
+                                <Font size="36.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
    </children>
 </AnchorPane>
