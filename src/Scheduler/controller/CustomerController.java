@@ -193,7 +193,7 @@ public class CustomerController implements Initializable{
 
     private void loadCustomerList(ActionEvent event) throws IOException {
         FXMLLoader custListLoader = new FXMLLoader();
-        custListLoader.setLocation(getClass().getResource("../view/CustomerList.fxml"));
+        custListLoader.setLocation(getClass().getResource("../view/CustomerApptList.fxml"));
         custListLoader.setResources(rs);
         Parent custListParent = custListLoader.load();
 

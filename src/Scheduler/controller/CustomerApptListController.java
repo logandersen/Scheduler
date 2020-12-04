@@ -2,6 +2,7 @@ package Scheduler.controller;
 
 import Scheduler.DAO.DBConnector;
 import Scheduler.DAO.DBService;
+import Scheduler.model.Appointment;
 import Scheduler.model.Customer;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -20,8 +21,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
-public class CustomerListController implements Initializable{
+public class CustomerApptListController implements Initializable{
 
+    //Customer
     @FXML
     private TableView<Customer> customerTableView;
     @FXML
@@ -41,6 +43,29 @@ public class CustomerListController implements Initializable{
     @FXML
     private TableColumn<Customer, String> createdBy;
 
+    //Appointment
+    @FXML
+    private TableView<Appointment> appointmentTableView;
+    @FXML
+    private TableColumn<Appointment, String> apptId;
+    @FXML
+    private TableColumn<Appointment, String> title;
+    @FXML
+    private TableColumn<Appointment, String> description;
+    @FXML
+    private TableColumn<Appointment, String> location;
+    @FXML
+    private TableColumn<Appointment, String> contact;
+    @FXML
+    private TableColumn<Appointment, String> type;
+    @FXML
+    private TableColumn<Appointment, String> start;
+    @FXML
+    private TableColumn<Appointment, String> end;
+    @FXML
+    private TableColumn<Appointment, String> customerId;
+
+
     private Connection conn;
     private ResourceBundle rs;
 
@@ -49,6 +74,7 @@ public class CustomerListController implements Initializable{
         this.rs = resourceBundle;
         this.conn = LoginController.getConn();
         try {
+            //Customer Table setup
             customerTableView.setItems(DBService.getAllCustomers(conn));
             customerName.setCellValueFactory(new PropertyValueFactory<Customer, String>("customerName"));
             address.setCellValueFactory(new PropertyValueFactory<Customer, String>("address"));
@@ -59,14 +85,42 @@ public class CustomerListController implements Initializable{
             division.setCellValueFactory(new PropertyValueFactory<Customer, String>("divisionName"));
             country.setCellValueFactory(new PropertyValueFactory<Customer, String>("countryName"));
 
-            //Double Click
+            //Customer Double Click
             customerTableView.setRowFactory(tv-> {
                 var row = new TableRow<Customer>();
                 row.setOnMouseClicked(event -> {
                     if (event.getClickCount() == 2 && !row.isEmpty()) {
                         Customer cust = row.getItem();
                         try {
-                            editPart(cust,event);
+                            editCustomer(cust,event);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                return row;
+            });
+
+            //Appointment Table setup
+            appointmentTableView.setItems(DBService.getAllAppointments(conn));
+            apptId.setCellValueFactory(new PropertyValueFactory<Appointment, String>("id"));
+            title.setCellValueFactory(new PropertyValueFactory<Appointment, String>("title"));
+            description.setCellValueFactory(new PropertyValueFactory<Appointment, String>("description"));
+            location.setCellValueFactory(new PropertyValueFactory<Appointment, String>("location"));
+            contact.setCellValueFactory(new PropertyValueFactory<Appointment, String>("contact"));
+            type.setCellValueFactory(new PropertyValueFactory<Appointment, String>("type"));
+            start.setCellValueFactory(new PropertyValueFactory<Appointment, String>("start"));
+            end.setCellValueFactory(new PropertyValueFactory<Appointment, String>("end"));
+            customerId.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerId"));
+
+            //Customer Double Click
+            appointmentTableView.setRowFactory(tv-> {
+                var row = new TableRow<Appointment>();
+                row.setOnMouseClicked(event -> {
+                    if (event.getClickCount() == 2 && !row.isEmpty()) {
+                        Appointment appt = row.getItem();
+                        try {
+                            editAppt(appt,event);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -80,7 +134,7 @@ public class CustomerListController implements Initializable{
         }
     }
 
-    private void editPart(Customer cust, MouseEvent event) throws Exception{
+    private void editCustomer(Customer cust, MouseEvent event) throws Exception{
         FXMLLoader custLoader = new FXMLLoader();
         custLoader.setLocation(getClass().getResource("../view/Customer.fxml"));
         custLoader.setResources(rs);
@@ -94,6 +148,22 @@ public class CustomerListController implements Initializable{
         appStage.setScene(partScene);
         appStage.show();
     }
+
+    private void editAppt(Appointment appt, MouseEvent event) throws Exception{
+        FXMLLoader apptLoader = new FXMLLoader();
+        apptLoader.setLocation(getClass().getResource("../view/Appointment.fxml"));
+        apptLoader.setResources(rs);
+        Parent apptParent = apptLoader.load();
+        AppointmentController apptController =  apptLoader.getController();
+        apptController.setPageType("Edit");
+        Appointment selectedAppt = appointmentTableView.getSelectionModel().getSelectedItem();
+        apptController.setSelectedAppointment(selectedAppt);
+        Scene partScene = new Scene(apptParent);
+        Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        appStage.setScene(partScene);
+        appStage.show();
+    }
+
     @FXML
     private void newCustomer(ActionEvent event) throws Exception {
         FXMLLoader custLoader = new FXMLLoader();

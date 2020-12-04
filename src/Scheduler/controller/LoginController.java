@@ -45,7 +45,7 @@ public class LoginController implements Initializable{
         if(authenticated){
             System.out.println("Authenticated");
             FXMLLoader custListLoader = new FXMLLoader();
-            custListLoader.setLocation(getClass().getResource("../view/CustomerList.fxml"));
+            custListLoader.setLocation(getClass().getResource("../view/CustomerApptList.fxml"));
             custListLoader.setResources(rs);
             Parent custListParent = custListLoader.load();
 

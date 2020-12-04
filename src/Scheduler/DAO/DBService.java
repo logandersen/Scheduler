@@ -1,13 +1,11 @@
 package Scheduler.DAO;
-import Scheduler.model.Country;
-import Scheduler.model.Customer;
-import Scheduler.model.Division;
-import Scheduler.model.User;
+import Scheduler.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -160,5 +158,32 @@ public class DBService {
             countries.add(country);
         }
         return countries;
+    }
+    public static ObservableList<Appointment> getAllAppointments(Connection conn) throws SQLException {
+        String qry = "SELECT * FROM appointments";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.execute();
+        var rs = statement.getResultSet();
+        ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+
+        while(rs.next()){
+            var appt = new Appointment();
+            appt.setId(rs.getInt("Appointment_ID"));
+            appt.setTitle(rs.getString("Title"));
+            appt.setDescription(rs.getString("Description"));
+            appt.setLocation(rs.getString("Location"));
+            appt.setType(rs.getString("Type"));
+            appt.setStart(rs.getTimestamp("Start").toLocalDateTime());
+            appt.setEnd(rs.getTimestamp("End").toLocalDateTime());
+            appt.setCreatedDate(rs.getDate("Create_Date"));
+            appt.setCreatedBy(rs.getString("Created_By"));
+            appt.setLastUpdate(rs.getTimestamp("Last_Update"));
+            appt.setLastUpdatedBy(rs.getString("Last_Updated_By"));
+            appt.setCustomerId(rs.getInt("Customer_ID"));
+            appt.setUserId(rs.getInt("User_ID"));
+            appt.setContactId(rs.getInt("Contact_ID"));
+            appointments.add(appt);
+        }
+        return appointments;
     }
 }
