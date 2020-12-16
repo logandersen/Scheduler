@@ -1,0 +1,296 @@
+package Scheduler.controller;
+
+import Scheduler.DAO.DBService;
+import Scheduler.model.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
+public class AppointmentController implements Initializable{
+    @FXML
+    private TextField Id;
+    @FXML
+    private TextField Title;
+    @FXML
+    private TextField Description;
+    @FXML
+    private TextField Location;
+    @FXML
+    private TextField Type;
+    @FXML
+    private Label CreatedOn;
+    @FXML
+    private Label CreatedBy;
+    @FXML
+    private Label LastUpdated;
+    @FXML
+    private Label LastUpdatedBy;
+    @FXML
+    private ComboBox<Contact> ContactCB;
+    @FXML
+    private ComboBox<Customer> CustomerCB;
+    @FXML
+    private ComboBox<User> UserCB;
+    @FXML
+    private DatePicker StartDate;
+    @FXML
+    private ComboBox<TimeOption> StartTimeCB;
+    @FXML
+    private DatePicker EndDate;
+    @FXML
+    private ComboBox<TimeOption> EndTimeCB;
+
+
+    private Connection conn;
+    private ResourceBundle rs;
+    private String pageType;
+    private Appointment appointment;
+    private ObservableList<Contact> contacts;
+    private ObservableList<Customer> customers;
+    private ObservableList<User> users;
+    private ObservableList<TimeOption> timeOptions;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        conn = LoginController.getConn();
+        rs = resourceBundle;
+        timeOptions = getTimeOptions();
+        StartTimeCB.setItems(timeOptions);
+        EndTimeCB.setItems(timeOptions);
+
+        try {
+            contacts = DBService.getAllContacts(conn);
+            ContactCB.setItems(contacts);
+            users = DBService.getAllUsers(conn);
+            UserCB.setItems(users);
+            customers = DBService.getAllCustomers(conn);
+            CustomerCB.setItems(customers);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+    public void setPageType(String pageType){
+        this.pageType = pageType;
+    }
+    public void setSelectedAppointment(Appointment selectedAppointment) {
+        appointment = selectedAppointment;
+        Id.setText(String.valueOf(selectedAppointment.getId()));
+        Title.setText(selectedAppointment.getTitle());
+        Description.setText(String.valueOf(selectedAppointment.getDescription()));
+        Location.setText(String.valueOf(selectedAppointment.getLocation()));
+        Type.setText(String.valueOf(selectedAppointment.getType()));
+        CreatedOn.setText(String.valueOf(selectedAppointment.getCreatedDate().toString()));
+        CreatedBy.setText(String.valueOf(selectedAppointment.getCreatedBy()));
+        LastUpdated.setText(String.valueOf(selectedAppointment.getLastUpdate().toString()));
+        LastUpdatedBy.setText(String.valueOf(selectedAppointment.getLastUpdatedBy()));
+        ContactCB.setValue(selectContact(selectedAppointment.getContactId()));
+        UserCB.setValue(selectUser(selectedAppointment.getUserId()));
+        CustomerCB.setValue(selectCustomer(selectedAppointment.getCustomerId()));
+
+        var timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+        StartDate.setValue(selectedAppointment.getStartLDT().toLocalDate());
+        StartTimeCB.setValue(
+                selectTimeOption(
+                        selectedAppointment.getStartLDT().format(timeFormat)
+                )
+        );
+        EndDate.setValue(selectedAppointment.getEndLDT().toLocalDate());
+        EndTimeCB.setValue(
+                selectTimeOption(
+                        selectedAppointment.getEndLDT().format(timeFormat)
+                )
+        );
+    }
+    private TimeOption selectTimeOption(String timeValue){
+        for(TimeOption timeOption: timeOptions){
+            var optionValue = timeOption.getTimeValue();
+            if( optionValue.equals(timeValue)){
+                return timeOption;
+            }
+        }
+        return  null;
+    }
+    private Contact selectContact(int contactId){
+        for(Contact contact: contacts){
+            if(contact.getId() == contactId){
+                return contact;
+            }
+        }
+        return  null;
+    }
+    private User selectUser(int userId){
+        for(User user: users){
+            if(user.getId() == userId){
+                return user;
+            }
+        }
+        return  null;
+    }
+    private Customer selectCustomer(int customerId){
+        for(Customer customer: customers){
+            if(customer.getId() == customerId){
+                return customer;
+            }
+        }
+        return null;
+    }
+
+    @FXML
+    private void cancel(ActionEvent event) throws IOException {
+        loadAppointmentList(event);
+    }
+    @FXML
+    private void delete(ActionEvent event) throws Exception{
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText(rs.getString("cust.DeleteText"));
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get() != ButtonType.OK){return;}
+
+        var deleted = DBService.deleteAppointment(conn,appointment);
+        if(deleted){
+            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText(rs.getString("cust.Deleted"));
+            alert.showAndWait();
+            loadAppointmentList(event);
+        }
+        else{
+            Alert failAlert = new Alert(Alert.AlertType.ERROR);
+            failAlert.setContentText(rs.getString("cust.DeleteFailed"));
+            failAlert.show();
+        }
+    }
+
+    @FXML
+    private void upsert(ActionEvent event) throws  Exception{
+        if(pageType == "Edit"){
+            update(event);
+        }
+        else {
+            saveNew(event);
+        }
+    }
+    private void update(ActionEvent event) throws Exception {
+        var userName = DBService.getUserName();
+        var appt = new Appointment();
+        appt.setId(appointment.getId());
+        appt.setTitle(Title.getText());
+        appt.setDescription(Description.getText());
+        appt.setLocation(Location.getText());
+        appt.setType(Type.getText());
+        var timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+        var startTime = LocalTime.parse(StartTimeCB.getValue().getTimeValue(),timeFormat);
+        appt.setStart(LocalDateTime.of(StartDate.getValue(),startTime));
+        var endTime = LocalTime.parse(EndTimeCB.getValue().getTimeValue(),timeFormat);
+        appt.setEnd(LocalDateTime.of(EndDate.getValue(),endTime));
+        appt.setLastUpdatedBy(userName);
+        appt.setCustomerId(CustomerCB.getValue().getId());
+        appt.setUserId(UserCB.getValue().getId());
+        appt.setContactId(ContactCB.getValue().getId());
+        DBService.updateAppointment(conn,appt);
+        loadAppointmentList(event);
+    }
+    private void saveNew(ActionEvent event) throws Exception {
+        var userName = DBService.getUserName();
+        var appt = new Appointment();
+        appt.setTitle(Title.getText());
+        appt.setDescription(Description.getText());
+        appt.setLocation(Location.getText());
+        appt.setType(Type.getText());
+        var timeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+        var startTime = LocalTime.parse(StartTimeCB.getValue().getTimeValue(),timeFormat);
+        appt.setStart(LocalDateTime.of(StartDate.getValue(),startTime));
+        var endTime = LocalTime.parse(EndTimeCB.getValue().getTimeValue(),timeFormat);
+        appt.setEnd(LocalDateTime.of(EndDate.getValue(),endTime));
+        appt.setCreatedBy(userName);
+        appt.setLastUpdatedBy(userName);
+        appt.setCustomerId(CustomerCB.getValue().getId());
+        appt.setUserId(UserCB.getValue().getId());
+        appt.setContactId(ContactCB.getValue().getId());
+        DBService.insertAppointment(conn,appt);
+        loadAppointmentList(event);
+    }
+    private void loadAppointmentList(ActionEvent event) throws IOException {
+        FXMLLoader custListLoader = new FXMLLoader();
+        custListLoader.setLocation(getClass().getResource("../view/CustomerApptList.fxml"));
+        custListLoader.setResources(rs);
+        Parent custListParent = custListLoader.load();
+        CustomerApptListController controller = custListLoader.getController();
+        controller.setApptTabSelected();
+        Scene partScene = new Scene(custListParent);
+        Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        appStage.setScene(partScene);
+        appStage.show();
+    }
+    private ObservableList<TimeOption> getTimeOptions(){
+        ObservableList<TimeOption> timeOptions = FXCollections.observableArrayList();
+        timeOptions.addAll(
+            new TimeOption("12:00 AM","00:00:00"),
+            new TimeOption("12:30 AM","00:30:00"),
+            new TimeOption("1:00 AM","01:00:00"),
+            new TimeOption("1:30 AM","01:30:00"),
+            new TimeOption("2:00 AM","02:00:00"),
+            new TimeOption("2:30 AM","02:30:00"),
+            new TimeOption("3:00 AM","03:00:00"),
+            new TimeOption("3:30 AM","03:30:00"),
+            new TimeOption("4:00 AM","04:00:00"),
+            new TimeOption("4:30 AM","04:30:00"),
+            new TimeOption("5:00 AM","05:00:00"),
+            new TimeOption("5:30 AM","05:30:00"),
+            new TimeOption("6:00 AM","06:00:00"),
+            new TimeOption("6:30 AM","06:30:00"),
+            new TimeOption("7:00 AM","07:00:00"),
+            new TimeOption("7:30 AM","07:30:00"),
+            new TimeOption("8:00 AM","08:00:00"),
+            new TimeOption("8:30 AM","08:30:00"),
+            new TimeOption("9:00 AM","09:00:00"),
+            new TimeOption("9:30 AM","09:30:00"),
+            new TimeOption("10:00 AM","10:00:00"),
+            new TimeOption("10:30 AM","10:30:00"),
+            new TimeOption("11:00 AM","11:00:00"),
+            new TimeOption("11:30 AM","11:30:00"),
+            new TimeOption("12:00 PM","12:00:00"),
+            new TimeOption("12:30 PM","12:30:00"),
+            new TimeOption("1:00 PM","13:00:00"),
+            new TimeOption("1:30 PM","13:30:00"),
+            new TimeOption("2:00 PM","14:00:00"),
+            new TimeOption("2:30 PM","14:30:00"),
+            new TimeOption("3:00 PM","15:00:00"),
+            new TimeOption("3:30 PM","15:30:00"),
+            new TimeOption("4:00 PM","16:00:00"),
+            new TimeOption("4:30 PM","16:30:00"),
+            new TimeOption("5:00 PM","17:00:00"),
+            new TimeOption("5:30 PM","17:30:00"),
+            new TimeOption("6:00 PM","18:00:00"),
+            new TimeOption("6:30 PM","18:30:00"),
+            new TimeOption("7:00 PM","19:00:00"),
+            new TimeOption("7:30 PM","19:30:00"),
+            new TimeOption("8:00 PM","20:00:00"),
+            new TimeOption("8:30 PM","20:30:00"),
+            new TimeOption("9:00 PM","21:00:00"),
+            new TimeOption("9:30 PM","21:30:00"),
+            new TimeOption("10:00 PM","22:00:00"),
+            new TimeOption("10:30 PM","22:30:00"),
+            new TimeOption("11:00 PM","23:00:00"),
+            new TimeOption("11:30 PM","23:30:00")
+        );
+        return timeOptions;
+    }
+}

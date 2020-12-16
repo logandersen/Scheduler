@@ -2,11 +2,8 @@ package Scheduler.DAO;
 import Scheduler.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 
 public class DBService {
@@ -34,6 +31,21 @@ public class DBService {
     public static String getUserName(){
         return Username;
     }
+    public static ObservableList<User> getAllUsers(Connection conn) throws SQLException{
+        String qry = "SELECT * FROM users";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.execute();
+        var rs = statement.getResultSet();
+        ObservableList<User> users = FXCollections.observableArrayList();
+
+        while(rs.next()){
+            var user = new User();
+            user.setId(rs.getInt("User_ID"));
+            user.setUsername(rs.getString("User_Name"));
+            users.add(user);
+        }
+        return users;
+    }
     public static ObservableList<Customer> getAllCustomers(Connection conn) throws SQLException {
         String qry = "SELECT * FROM customers";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -43,23 +55,23 @@ public class DBService {
 
         while(rs.next()){
             var customer = new Customer();
-            customer.customerName = rs.getString("Customer_Name");
-            customer.id = rs.getInt("Customer_ID");
-            customer.address = rs.getString("Address");
-            customer.phone = rs.getString("Phone");
-            customer.postalCode = rs.getString("Postal_Code");
-            customer.createdDate = rs.getDate("Create_Date");
-            customer.createdBy = rs.getString("Created_By");
-            customer.lastUpdate = rs.getTimestamp("Last_Update");
-            customer.lastUpdatedBy = rs.getString("Last_Updated_By");
-            customer.divisionID = rs.getInt("Division_ID");
+            customer.setCustomerName(rs.getString("Customer_Name"));
+            customer.setId(rs.getInt("Customer_ID"));
+            customer.setAddress(rs.getString("Address"));
+            customer.setPhone(rs.getString("Phone"));
+            customer.setPostalCode(rs.getString("Postal_Code"));
+            customer.setCreatedDate(rs.getDate("Create_Date"));
+            customer.setCreatedBy(rs.getString("Created_By"));
+            customer.setLastUpdate(rs.getTimestamp("Last_Update"));
+            customer.setLastUpdatedBy(rs.getString("Last_Updated_By"));
+            customer.setDivisionID(rs.getInt("Division_ID"));
 
             //Get Division
-            var division = getDivision(conn, customer.divisionID);
-            customer.divisionName = division.name;
+            var division = getDivision(conn, customer.getDivisionID());
+            customer.setDivisionName(division.name);
             //Get Country
             var country = getCountry(conn,division.countryID);
-            customer.countryName = country.name;
+            customer.setCountryName(country.getName());
             customers.add(customer);
         }
         return customers;
@@ -68,15 +80,15 @@ public class DBService {
     public static void updateCustomer(Connection conn, Customer customer) throws SQLException {
         String qry = "UPDATE customers SET Customer_Name=?,Address=?,Phone=?,Postal_Code=?,Last_Update=?,Last_Updated_By=?,Division_ID=? WHERE Customer_ID =?;";
         PreparedStatement statement = conn.prepareStatement(qry);
-        statement.setString(1,customer.customerName);
-        statement.setString(2,customer.address);
-        statement.setString(3, customer.phone);
-        statement.setString(4, customer.postalCode);
+        statement.setString(1,customer.getCustomerName());
+        statement.setString(2,customer.getAddress());
+        statement.setString(3, customer.getPhone());
+        statement.setString(4, customer.getPostalCode());
         var utilDate = new java.util.Date();
         statement.setDate(5, new java.sql.Date(utilDate.getTime()));
-        statement.setString(6,customer.lastUpdatedBy);
-        statement.setInt(7,customer.divisionID);
-        statement.setInt(8,customer.id);
+        statement.setString(6,customer.getLastUpdatedBy());
+        statement.setInt(7,customer.getDivisionID());
+        statement.setInt(8,customer.getId());
 
         statement.execute();
     }
@@ -84,23 +96,23 @@ public class DBService {
         String qry = "INSERT INTO customers (Customer_Name,Address,Phone,Postal_Code,Create_Date,Created_By,Last_Update,Last_Updated_By,Division_ID) " +
                 "VALUES(?,?,?,?,?,?,?,?,?)";
         PreparedStatement statement = conn.prepareStatement(qry);
-        statement.setString(1,customer.customerName);
-        statement.setString(2,customer.address);
-        statement.setString(3, customer.phone);
-        statement.setString(4, customer.postalCode);
+        statement.setString(1,customer.getCustomerName());
+        statement.setString(2,customer.getAddress());
+        statement.setString(3, customer.getPhone());
+        statement.setString(4, customer.getPostalCode());
         var utilDate = new java.util.Date();
         statement.setTimestamp(5,new Timestamp(System.currentTimeMillis()));
-        statement.setString(6,customer.createdBy);
+        statement.setString(6,customer.getCreatedBy());
         statement.setDate(7, new java.sql.Date(utilDate.getTime()));
-        statement.setString(8,customer.lastUpdatedBy);
-        statement.setInt(9,customer.divisionID);
+        statement.setString(8,customer.getLastUpdatedBy());
+        statement.setInt(9,customer.getDivisionID());
 
         statement.execute();
 }
     public static boolean deleteCustomer(Connection conn, Customer customer) throws SQLException{
         String qry = "DELETE FROM customers WHERE Customer_ID =?";
         PreparedStatement statement = conn.prepareStatement(qry);
-        statement.setInt(1,customer.id);
+        statement.setInt(1,customer.getId());
         statement.execute();
         if(statement.getUpdateCount() > 0){
            return true;
@@ -142,7 +154,7 @@ public class DBService {
         var rs = statement.getResultSet();
         rs.next();
         var country = new Country();
-        country.name = rs.getString("Country");
+        country.setName(rs.getString("Country"));
         return country;
     };
     public static ObservableList<Country> getAllCountries(Connection conn) throws SQLException{
@@ -153,14 +165,18 @@ public class DBService {
         ObservableList<Country> countries = FXCollections.observableArrayList();
         while(rs.next()){
             var country = new Country();
-            country.id = rs.getInt("Country_ID");
-            country.name = rs.getString("Country");
+            country.setId(rs.getInt("Country_ID"));
+            country.setName(rs.getString("Country"));
             countries.add(country);
         }
         return countries;
     }
     public static ObservableList<Appointment> getAllAppointments(Connection conn) throws SQLException {
-        String qry = "SELECT * FROM appointments";
+        String qry = "SELECT appointments.*,Contact_Name,User_Name,Customer_Name " +
+                "FROM appointments " +
+                "LEFT JOIN contacts ON contacts.Contact_ID=appointments.Contact_ID " +
+                "LEFT JOIN users ON users.User_ID=appointments.User_ID " +
+                "LEFT JOIN customers ON customers.Customer_ID=appointments.Customer_ID";
         PreparedStatement statement = conn.prepareStatement(qry);
         statement.execute();
         var rs = statement.getResultSet();
@@ -182,8 +198,77 @@ public class DBService {
             appt.setCustomerId(rs.getInt("Customer_ID"));
             appt.setUserId(rs.getInt("User_ID"));
             appt.setContactId(rs.getInt("Contact_ID"));
+            appt.setContactName(rs.getString("Contact_Name"));
+            appt.setCustomerName(rs.getString("Customer_Name"));
+            appt.setUserName(rs.getString("User_Name"));
             appointments.add(appt);
         }
         return appointments;
+    }
+    public static void updateAppointment(Connection conn, Appointment appointment) throws SQLException {
+        String qry = "UPDATE appointments SET Title=?,Description=?," +
+                "Location=?,Type=?,Start=?,End=?,Last_Update=?," +
+                "Last_Updated_By=?,Customer_ID=?,User_ID=?,Contact_ID=? WHERE Appointment_ID =?";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.setString(1,appointment.getTitle());
+        statement.setString(2,appointment.getDescription());
+        statement.setString(3,appointment.getLocation());
+        statement.setString(4,appointment.getType());
+        statement.setTimestamp(5,Timestamp.valueOf(appointment.getStartLDT()));
+        statement.setTimestamp(6,Timestamp.valueOf(appointment.getEndLDT()));
+        var utilDate = new java.util.Date();
+        statement.setDate(7, new java.sql.Date(utilDate.getTime()));
+        statement.setString(8,appointment.getLastUpdatedBy());
+        statement.setInt(9,appointment.getCustomerId());
+        statement.setInt(10,appointment.getUserId());
+        statement.setInt(11,appointment.getContactId());
+        statement.setInt(12,appointment.getId());
+        statement.execute();
+    }
+    public static void insertAppointment(Connection conn, Appointment appointment) throws SQLException {
+        String qry = "INSERT INTO appointments (Title,Description,Location,Type,Start,End,Create_Date,Created_By,Last_Update,Last_Updated_By,Customer_ID,User_ID,Contact_ID) " +
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.setString(1,appointment.getTitle());
+        statement.setString(2,appointment.getDescription());
+        statement.setString(3,appointment.getLocation());
+        statement.setString(4,appointment.getType());
+        statement.setTimestamp(5,Timestamp.valueOf(appointment.getStartLDT()));
+        statement.setTimestamp(6,Timestamp.valueOf(appointment.getEndLDT()));
+        statement.setTimestamp(7,new Timestamp(System.currentTimeMillis()));
+        var utilDate = new java.util.Date();
+        statement.setString(8,appointment.getCreatedBy());
+        statement.setDate(9, new java.sql.Date(utilDate.getTime()));
+        statement.setString(10,appointment.getLastUpdatedBy());
+        statement.setInt(11,appointment.getCustomerId());
+        statement.setInt(12,appointment.getUserId());
+        statement.setInt(13,appointment.getContactId());
+        statement.execute();
+    }
+    public static boolean deleteAppointment(Connection conn, Appointment appointment) throws SQLException{
+        String qry = "DELETE FROM appointments WHERE appointment_ID =?";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.setInt(1,appointment.getId());
+        statement.execute();
+        if(statement.getUpdateCount() > 0){
+            return true;
+        };
+        return false;
+    }
+    public static ObservableList<Contact> getAllContacts(Connection conn) throws SQLException{
+        String qry = "SELECT * FROM contacts";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.execute();
+        var rs = statement.getResultSet();
+        ObservableList<Contact> contacts = FXCollections.observableArrayList();
+
+        while(rs.next()){
+            var contact = new Contact();
+            contact.setId(rs.getInt("Contact_ID"));
+            contact.setName(rs.getString("Contact_Name"));
+            contact.setEmail(rs.getString("Email"));
+            contacts.add(contact);
+        }
+        return contacts;
     }
 }

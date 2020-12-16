@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="751.0" prefWidth="867.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Scheduler.controller.CustomerListController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="751.0" prefWidth="867.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Scheduler.controller.CustomerApptListController">
    <children>
-      <TabPane prefHeight="751.0" prefWidth="867.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="751.0" prefWidth="867.0" tabClosingPolicy="UNAVAILABLE" fx:id="tabPane">
         <tabs>
           <Tab text="%custList.Tab">
             <content>
@@ -53,10 +53,10 @@
                                 <TableColumn fx:id="type" text="%apptList.type" />
                                 <TableColumn fx:id="start" text="%apptList.start" />
                                 <TableColumn fx:id="end" text="%apptList.end" />
-                                <TableColumn fx:id="customerId" text="%apptList.custId" />
+                                <TableColumn fx:id="apptCustomerName" text="%apptList.custId" />
                             </columns>
                         </TableView>
-                        <Button layoutX="706.0" layoutY="28.0" mnemonicParsing="false" onAction="#newCustomer" text="%apptList.add" />
+                        <Button layoutX="706.0" layoutY="28.0" mnemonicParsing="false" onAction="#newAppointment" text="%apptList.add" />
                         <Label layoutX="36.0" layoutY="14.0" text="%apptList.heading">
                             <font>
                                 <Font size="36.0" />

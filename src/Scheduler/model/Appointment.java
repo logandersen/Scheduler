@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Appointment {
     private int id;
@@ -18,8 +19,11 @@ public class Appointment {
     private Timestamp lastUpdate;
     private String lastUpdatedBy;
     private int customerId;
+    private String customerName;
     private int userId;
+    private String userName;
     private int contactId;
+    private String contactName;
 
     public void Appointment(){
     }
@@ -44,14 +48,21 @@ public class Appointment {
         return type;
     }
 
-    public LocalDateTime getStart() {
+    public LocalDateTime getStartLDT() {
         return start;
     }
-
-    public LocalDateTime getEnd() {
-        return end;
+    public String getStart(){
+        var fullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
+        return start.format(fullFormat);
     }
 
+    public LocalDateTime getEndLDT() {
+        return end;
+    }
+    public String getEnd(){
+        var fullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
+        return end.format(fullFormat);
+    }
     public Date getCreatedDate() {
         return createdDate;
     }
@@ -80,6 +91,17 @@ public class Appointment {
         return contactId;
     }
 
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
 
     public void setId(int id) {
         this.id = id;
@@ -135,5 +157,17 @@ public class Appointment {
 
     public void setContactId(int contactId) {
         this.contactId = contactId;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
     }
 }

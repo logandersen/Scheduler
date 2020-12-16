@@ -103,7 +103,7 @@ public class CustomerController implements Initializable{
     }
     private Country selectCountry(int countryId){
         for(Country country: countries){
-            if(country.id == countryId){
+            if(country.getId() == countryId){
                 return country;
             }
         }
@@ -116,9 +116,9 @@ public class CustomerController implements Initializable{
         ObservableList<Division> filterDivs = FXCollections.observableArrayList();
         Division selectedDiv = null;
         for(Division div: divisions){
-            if(div.countryID == selectedCountry.id) {
+            if(div.countryID == selectedCountry.getId()) {
                 filterDivs.add(div);
-                if(customer != null && div.id == customer.divisionID){
+                if(customer != null && div.id == customer.getDivisionID()){
                     selectedDiv = div;
                 }
             }
@@ -167,26 +167,26 @@ public class CustomerController implements Initializable{
     }
     private void update(ActionEvent event) throws Exception{
         var updateCust = new Customer();
-        updateCust.customerName = Name.getText();
-        updateCust.phone =  Phone.getText();
-        updateCust.address = Address.getText();
-        updateCust.postalCode = PostalCode.getText();
-        updateCust.divisionID = DivisionCB.getValue().id;
-        updateCust.lastUpdatedBy = DBService.getUserName();
-        updateCust.id = Integer.parseInt(Id.getText());
+        updateCust.setCustomerName(Name.getText());
+        updateCust.setPhone(Phone.getText());
+        updateCust.setAddress(Address.getText());
+        updateCust.setPostalCode(PostalCode.getText());
+        updateCust.setDivisionID(DivisionCB.getValue().id);
+        updateCust.setLastUpdatedBy(DBService.getUserName());
+        updateCust.setId(Integer.parseInt(Id.getText()));
         DBService.updateCustomer(conn,updateCust);
         loadCustomerList(event);
     }
     private void saveNew(ActionEvent event) throws Exception{
         var userName = DBService.getUserName();
         var newCust = new Customer();
-        newCust.customerName = Name.getText();
-        newCust.phone =  Phone.getText();
-        newCust.address = Address.getText();
-        newCust.postalCode = PostalCode.getText();
-        newCust.divisionID = DivisionCB.getValue().id;
-        newCust.lastUpdatedBy = userName;
-        newCust.createdBy = userName;
+        newCust.setCustomerName(Name.getText());
+        newCust.setPhone(Phone.getText());
+        newCust.setAddress(Address.getText());
+        newCust.setPostalCode(PostalCode.getText());
+        newCust.setDivisionID(DivisionCB.getValue().id);
+        newCust.setLastUpdatedBy(userName);
+        newCust.setCreatedBy(userName);
         DBService.insertCustomer(conn,newCust);
         loadCustomerList(event);
     }
@@ -196,7 +196,6 @@ public class CustomerController implements Initializable{
         custListLoader.setLocation(getClass().getResource("../view/CustomerApptList.fxml"));
         custListLoader.setResources(rs);
         Parent custListParent = custListLoader.load();
-
         Scene partScene = new Scene(custListParent);
         Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         appStage.setScene(partScene);

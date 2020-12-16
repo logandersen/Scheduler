@@ -27,7 +27,7 @@
          </font>
       </Label>
       <Label fx:id="ErrorText" layoutX="92.0" layoutY="220.0" text="%login.error" textFill="RED" visible="false" />
-      <Button alignment="CENTER" layoutX="299.0" layoutY="200.0" mnemonicParsing="false" onAction="#login" prefWidth="100.0" text="%login.loginBtn" />
+      <Button alignment="CENTER" layoutX="299.0" layoutY="200.0" mnemonicParsing="false" onAction="#login" prefWidth="100.0" text="%login.loginBtn" defaultButton="true" />
       <Label fx:id="Zone" alignment="CENTER_RIGHT" layoutX="382.0" layoutY="251.0" prefHeight="17.0" prefWidth="94.0" text="" />
    </children>
 </AnchorPane>

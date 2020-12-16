@@ -6,18 +6,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Customer {
-    public int id;
-    public String customerName;
-    public String address;
-    public String postalCode;
-    public String phone;
-    public Date createdDate;
-    public String createdBy;
-    public Timestamp lastUpdate;
-    public String lastUpdatedBy;
-    public int divisionID;
-    public String divisionName;
-    public String countryName;
+    private int id;
+    private String customerName;
+    private String address;
+    private String postalCode;
+    private String phone;
+    private Date createdDate;
+    private String createdBy;
+    private Timestamp lastUpdate;
+    private String lastUpdatedBy;
+    private int divisionID;
+    private String divisionName;
+    private String countryName;
 
     public void Customer() {
     }
@@ -83,5 +83,10 @@ public class Customer {
 
     public void setCountryName(String countryName) {
         this.countryName = countryName;
+    }
+
+    @Override
+    public String toString(){
+        return(customerName);
     }
 }

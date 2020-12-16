@@ -63,16 +63,22 @@ public class CustomerApptListController implements Initializable{
     @FXML
     private TableColumn<Appointment, String> end;
     @FXML
-    private TableColumn<Appointment, String> customerId;
+    private TableColumn<Appointment, String> apptCustomerName;
+    @FXML
+    private TabPane tabPane;
 
 
     private Connection conn;
     private ResourceBundle rs;
+    private boolean apptTabSelected;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.rs = resourceBundle;
         this.conn = LoginController.getConn();
+        if(apptTabSelected){
+            setApptTab();
+        }
         try {
             //Customer Table setup
             customerTableView.setItems(DBService.getAllCustomers(conn));
@@ -107,11 +113,11 @@ public class CustomerApptListController implements Initializable{
             title.setCellValueFactory(new PropertyValueFactory<Appointment, String>("title"));
             description.setCellValueFactory(new PropertyValueFactory<Appointment, String>("description"));
             location.setCellValueFactory(new PropertyValueFactory<Appointment, String>("location"));
-            contact.setCellValueFactory(new PropertyValueFactory<Appointment, String>("contact"));
+            contact.setCellValueFactory(new PropertyValueFactory<Appointment, String>("contactName"));
             type.setCellValueFactory(new PropertyValueFactory<Appointment, String>("type"));
             start.setCellValueFactory(new PropertyValueFactory<Appointment, String>("start"));
             end.setCellValueFactory(new PropertyValueFactory<Appointment, String>("end"));
-            customerId.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerId"));
+            apptCustomerName.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerName"));
 
             //Customer Double Click
             appointmentTableView.setRowFactory(tv-> {
@@ -176,5 +182,25 @@ public class CustomerApptListController implements Initializable{
         Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         appStage.setScene(partScene);
         appStage.show();
+    }
+    @FXML
+    private void newAppointment(ActionEvent event) throws Exception {
+        FXMLLoader apptLoader = new FXMLLoader();
+        apptLoader.setLocation(getClass().getResource("../view/Appointment.fxml"));
+        apptLoader.setResources(rs);
+        Parent apptParent = apptLoader.load();
+        AppointmentController apptController =  apptLoader.getController();
+        apptController.setPageType("New");
+        Scene partScene = new Scene(apptParent);
+        Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        appStage.setScene(partScene);
+        appStage.show();
+    }
+
+    private void setApptTab(){
+        tabPane.getSelectionModel().select(1);
+    }
+    public void setApptTabSelected(){
+        this.apptTabSelected = true;
     }
 }
