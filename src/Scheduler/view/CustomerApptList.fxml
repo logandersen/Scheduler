@@ -6,12 +6,13 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="751.0" prefWidth="867.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Scheduler.controller.CustomerApptListController">
    <children>
-      <TabPane prefHeight="751.0" prefWidth="867.0" tabClosingPolicy="UNAVAILABLE" fx:id="tabPane">
+      <TabPane fx:id="tabPane" prefHeight="751.0" prefWidth="867.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="%custList.Tab">
             <content>
@@ -56,12 +57,18 @@
                                 <TableColumn fx:id="apptCustomerName" text="%apptList.custId" />
                             </columns>
                         </TableView>
-                        <Button layoutX="706.0" layoutY="28.0" mnemonicParsing="false" onAction="#newAppointment" text="%apptList.add" />
+                        <Button layoutX="719.0" layoutY="28.0" mnemonicParsing="false" onAction="#newAppointment" text="%apptList.add" />
                         <Label layoutX="36.0" layoutY="14.0" text="%apptList.heading">
                             <font>
                                 <Font size="36.0" />
                             </font>
                         </Label>
+                        <Button fx:id="prevBtn" layoutX="502.0" layoutY="28.0" mnemonicParsing="false" text="&lt;" />
+                        <Button fx:id="nextBtn" layoutX="686.0" layoutY="28.0" mnemonicParsing="false" text="&gt;" />
+                        <Label fx:id="dateSelectionText" alignment="CENTER" layoutX="532.0" layoutY="32.0" prefHeight="17.0" prefWidth="152.0" />
+                        <ToggleButton fx:id="monthToggle" layoutX="342.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="%appt.month" />
+                        <ToggleButton fx:id="weekToggle" layoutX="405.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="68.0" text="%appt.week" />
+                        <Label alignment="CENTER" layoutX="332.0" layoutY="6.0" prefHeight="17.0" prefWidth="157.0" text="%appt.displayBy" />
                     </children>
                 </AnchorPane>
             </content>

@@ -66,6 +66,12 @@ public class CustomerApptListController implements Initializable{
     private TableColumn<Appointment, String> apptCustomerName;
     @FXML
     private TabPane tabPane;
+    @FXML
+    private ToggleGroup displayBy;
+    @FXML
+    private ToggleButton weekToggle;
+    @FXML
+    private ToggleButton monthToggle;
 
 
     private Connection conn;
@@ -138,6 +144,11 @@ public class CustomerApptListController implements Initializable{
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        displayBy = new ToggleGroup();
+        monthToggle.setToggleGroup(displayBy);
+        weekToggle.setToggleGroup(displayBy);
+        displayBy.selectToggle(monthToggle);
+
     }
 
     private void editCustomer(Customer cust, MouseEvent event) throws Exception{
