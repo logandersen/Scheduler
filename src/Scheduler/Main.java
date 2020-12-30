@@ -10,9 +10,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.sql.*;
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.temporal.WeekFields;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.time.format.*;
+import java.util.Calendar.*;
+import java.util.TimeZone;
 
 public class Main extends Application {
 
@@ -35,6 +40,20 @@ public class Main extends Application {
         primaryStage.setTitle(rb.getString("primaryStage.title"));
         primaryStage.setScene(new Scene(loginParent));
         primaryStage.show();
+
+        var months = Month.values();
+        for (Month month: months) {
+            System.out.println(month.getValue() + " : " + month.getDisplayName(TextStyle.FULL,defaultLocale));
+        }
+
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault(),defaultLocale);
+        calendar.set(Calendar.DAY_OF_WEEK,1);
+        var firstDate = calendar.getTime();
+        calendar.set(Calendar.DAY_OF_WEEK,7);
+        var LastDate = calendar.getTime();
+        LocalDate firstDay = LocalDate.ofInstant(firstDate.toInstant(), ZoneId.systemDefault());
+        LocalDate lastDay = LocalDate.ofInstant(LastDate.toInstant(),ZoneId.systemDefault());
+
 
     }
     public static void main(String[] args) throws SQLException {

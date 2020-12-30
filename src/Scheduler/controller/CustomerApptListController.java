@@ -16,9 +16,16 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
+
+import javax.swing.*;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.time.temporal.WeekFields;
+import java.util.Calendar;
 import java.util.ResourceBundle;
 
 public class CustomerApptListController implements Initializable{
@@ -72,11 +79,14 @@ public class CustomerApptListController implements Initializable{
     private ToggleButton weekToggle;
     @FXML
     private ToggleButton monthToggle;
+    @FXML
+    private Label dateSelectionText;
 
 
     private Connection conn;
     private ResourceBundle rs;
     private boolean apptTabSelected;
+    private Month month;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -148,7 +158,8 @@ public class CustomerApptListController implements Initializable{
         monthToggle.setToggleGroup(displayBy);
         weekToggle.setToggleGroup(displayBy);
         displayBy.selectToggle(monthToggle);
-
+        setCurrentMonth();
+        dateSelectionText.setText(this.month.getDisplayName(TextStyle.FULL,rs.getLocale()));
     }
 
     private void editCustomer(Customer cust, MouseEvent event) throws Exception{
@@ -213,5 +224,38 @@ public class CustomerApptListController implements Initializable{
     }
     public void setApptTabSelected(){
         this.apptTabSelected = true;
+    }
+    private void setCurrentMonth(){
+        this.month = LocalDate.now().getMonth();
+    }
+    private void setMonth(Integer monthInt){
+        this.month = Month.of(monthInt);
+        dateSelectionText.setText(this.month.getDisplayName(TextStyle.FULL,rs.getLocale()));
+    }
+    private void setCurrentWeek(){
+        var today = LocalDate.now();
+        WeekFields weekFields = WeekFields.of(rs.getLocale());
+
+    }
+    private void setWeek(){
+
+    }
+    @FXML
+    private void prevDate(ActionEvent event){
+        var selectedToggle = (ToggleButton)displayBy.getSelectedToggle();
+        if(selectedToggle.getText().equals("Month")){
+            var currentMonthInt = this.month.getValue();
+            var monthInt = currentMonthInt == 1 ? 12 : currentMonthInt -1;
+            setMonth(monthInt);
+        }
+    }
+    @FXML
+    private void nextDate(ActionEvent event){
+        var selectedToggle = (ToggleButton)displayBy.getSelectedToggle();
+        if(selectedToggle.getText().equals("Month")){
+            var currentMonthInt = this.month.getValue();
+            var monthInt = currentMonthInt == 12 ? 1 : currentMonthInt + 1;
+            setMonth(monthInt);
+        }
     }
 }
