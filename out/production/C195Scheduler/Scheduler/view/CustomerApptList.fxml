@@ -66,8 +66,8 @@
                         <Button fx:id="prevBtn" layoutX="502.0" layoutY="28.0" mnemonicParsing="false" text="&lt;" onAction="#prevDate" />
                         <Button fx:id="nextBtn" layoutX="686.0" layoutY="28.0" mnemonicParsing="false" text="&gt;" onAction="#nextDate"/>
                         <Label fx:id="dateSelectionText" alignment="CENTER" layoutX="532.0" layoutY="32.0" prefHeight="17.0" prefWidth="152.0" />
-                        <ToggleButton fx:id="monthToggle" layoutX="342.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="%appt.month" />
-                        <ToggleButton fx:id="weekToggle" layoutX="405.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="68.0" text="%appt.week" />
+                        <ToggleButton fx:id="monthToggle" layoutX="342.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="%appt.month" onAction="#setCurrentMonth" />
+                        <ToggleButton fx:id="weekToggle" layoutX="405.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="68.0" text="%appt.week" onAction="#setCurrentWeek"/>
                         <Label alignment="CENTER" layoutX="332.0" layoutY="6.0" prefHeight="17.0" prefWidth="157.0" text="%appt.displayBy" />
                     </children>
                 </AnchorPane>

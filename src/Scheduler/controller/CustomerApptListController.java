@@ -4,6 +4,8 @@ import Scheduler.DAO.DBConnector;
 import Scheduler.DAO.DBService;
 import Scheduler.model.Appointment;
 import Scheduler.model.Customer;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -23,10 +25,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.WeekFields;
 import java.util.Calendar;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 public class CustomerApptListController implements Initializable{
 
@@ -71,6 +76,8 @@ public class CustomerApptListController implements Initializable{
     private TableColumn<Appointment, String> end;
     @FXML
     private TableColumn<Appointment, String> apptCustomerName;
+    private ObservableList<Appointment> allAppts;
+
     @FXML
     private TabPane tabPane;
     @FXML
@@ -86,7 +93,10 @@ public class CustomerApptListController implements Initializable{
     private Connection conn;
     private ResourceBundle rs;
     private boolean apptTabSelected;
-    private Month month;
+    private LocalDate dateRange;
+    private Calendar weekRange;
+    private LocalDate firstDay;
+    private LocalDate lastDay;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -124,7 +134,8 @@ public class CustomerApptListController implements Initializable{
             });
 
             //Appointment Table setup
-            appointmentTableView.setItems(DBService.getAllAppointments(conn));
+            allAppts = DBService.getAllAppointments(conn);
+            appointmentTableView.setItems(allAppts);
             apptId.setCellValueFactory(new PropertyValueFactory<Appointment, String>("id"));
             title.setCellValueFactory(new PropertyValueFactory<Appointment, String>("title"));
             description.setCellValueFactory(new PropertyValueFactory<Appointment, String>("description"));
@@ -159,7 +170,6 @@ public class CustomerApptListController implements Initializable{
         weekToggle.setToggleGroup(displayBy);
         displayBy.selectToggle(monthToggle);
         setCurrentMonth();
-        dateSelectionText.setText(this.month.getDisplayName(TextStyle.FULL,rs.getLocale()));
     }
 
     private void editCustomer(Customer cust, MouseEvent event) throws Exception{
@@ -225,37 +235,77 @@ public class CustomerApptListController implements Initializable{
     public void setApptTabSelected(){
         this.apptTabSelected = true;
     }
+    @FXML
     private void setCurrentMonth(){
-        this.month = LocalDate.now().getMonth();
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault(),rs.getLocale());
+        calendar.set(Calendar.DAY_OF_MONTH,1);
+        dateRange = LocalDate.ofInstant(calendar.toInstant(), ZoneId.systemDefault());
+        setMonthFilter();
     }
-    private void setMonth(Integer monthInt){
-        this.month = Month.of(monthInt);
-        dateSelectionText.setText(this.month.getDisplayName(TextStyle.FULL,rs.getLocale()));
+    private void setMonthFilter(){
+        var newMonth = dateRange.getMonth();
+        dateSelectionText.setText(newMonth.getDisplayName(TextStyle.FULL,rs.getLocale()) + " " + dateRange.getYear());
+        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+        for (Appointment appt:allAppts) {
+            var startDate = appt.getStartLDT().toLocalDate();
+            var sameMonth = startDate.getMonth().getValue() == dateRange.getMonth().getValue();
+            var sameYear = startDate.getYear() == dateRange.getYear();
+            if(sameMonth && sameYear){
+                filteredAppts.add(appt);
+            }
+        }
+        appointmentTableView.setItems(filteredAppts);
     }
+    @FXML
     private void setCurrentWeek(){
         var today = LocalDate.now();
         WeekFields weekFields = WeekFields.of(rs.getLocale());
+        weekRange = Calendar.getInstance(TimeZone.getDefault(),rs.getLocale());
+        setWeekFilter();
 
     }
-    private void setWeek(){
+    private void setWeekFilter(){
+        var calendar = weekRange;
+        calendar.set(Calendar.DAY_OF_WEEK,1);
+        var firstDate = calendar.getTime();
+        calendar.set(Calendar.DAY_OF_WEEK,7);
+        var LastDate = calendar.getTime();
+        firstDay = LocalDate.ofInstant(firstDate.toInstant(), ZoneId.systemDefault());
+        lastDay = LocalDate.ofInstant(LastDate.toInstant(),ZoneId.systemDefault());
+        var monthDayYear = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        dateSelectionText.setText(firstDay.format(monthDayYear) + " - " + lastDay.format(monthDayYear));
 
+        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+        for (Appointment appt:allAppts) {
+            var startDate = appt.getStartLDT().toLocalDate();
+            if(startDate.compareTo(firstDay) > -1 && startDate.compareTo(lastDay) < 1){
+                filteredAppts.add(appt);
+            }
+        }
+        appointmentTableView.setItems(filteredAppts);
     }
     @FXML
     private void prevDate(ActionEvent event){
         var selectedToggle = (ToggleButton)displayBy.getSelectedToggle();
         if(selectedToggle.getText().equals("Month")){
-            var currentMonthInt = this.month.getValue();
-            var monthInt = currentMonthInt == 1 ? 12 : currentMonthInt -1;
-            setMonth(monthInt);
+            dateRange = dateRange.minusMonths(1);
+            setMonthFilter();
+        }
+        else{
+            weekRange.add(Calendar.WEEK_OF_YEAR,-1);
+            setWeekFilter();
         }
     }
     @FXML
     private void nextDate(ActionEvent event){
         var selectedToggle = (ToggleButton)displayBy.getSelectedToggle();
         if(selectedToggle.getText().equals("Month")){
-            var currentMonthInt = this.month.getValue();
-            var monthInt = currentMonthInt == 12 ? 1 : currentMonthInt + 1;
-            setMonth(monthInt);
+            dateRange = dateRange.plusMonths(1);
+            setMonthFilter();
+        }
+        else{
+            weekRange.add(Calendar.WEEK_OF_YEAR,1);
+            setWeekFilter();
         }
     }
 }
