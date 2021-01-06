@@ -10,17 +10,17 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="751.0" prefWidth="867.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Scheduler.controller.CustomerApptListController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="751.0" prefWidth="967.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Scheduler.controller.CustomerApptListController">
    <children>
-      <TabPane fx:id="tabPane" prefHeight="751.0" prefWidth="867.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane fx:id="tabPane" prefHeight="751.0" prefWidth="967.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="%custList.Tab">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="customerTableView" layoutX="36.0" layoutY="80.0" prefHeight="603.0" prefWidth="795.0">
+                        <TableView fx:id="customerTableView" layoutX="36.0" layoutY="80.0" prefHeight="603.0" prefWidth="895.0">
                            <columns>
-                              <TableColumn fx:id="customerName" text="%custList.Name" />
+                              <TableColumn fx:id="customerName" text="%custList.Name" prefWidth="150"/>
                               <TableColumn fx:id="address" text="%custList.Address" />
                               <TableColumn fx:id="postalCode" text="%custList.PostalCode" />
                               <TableColumn fx:id="phone" text="%custList.Phone" />
@@ -30,7 +30,7 @@
                               <TableColumn fx:id="createdBy" text="%custList.CreatedBy" />
                            </columns>
                         </TableView>
-                        <Button layoutX="706.0" layoutY="28.0" mnemonicParsing="false" onAction="#newCustomer" text="%custList.Add" />
+                        <Button layoutX="806.0" layoutY="28.0" mnemonicParsing="false" onAction="#newCustomer" text="%custList.Add" />
                         <Label layoutX="36.0" layoutY="14.0" text="%custList.heading">
                            <font>
                               <Font size="36.0" />
@@ -44,7 +44,7 @@
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
-                        <TableView fx:id="appointmentTableView" layoutX="36.0" layoutY="80.0" prefHeight="603.0" prefWidth="795.0">
+                        <TableView fx:id="appointmentTableView" layoutX="36.0" layoutY="80.0" prefHeight="603.0" prefWidth="895.0">
                             <columns>
                                 <TableColumn fx:id="apptId" text="%apptList.apptId" />
                                 <TableColumn fx:id="title" text="%apptList.title" />
@@ -52,12 +52,12 @@
                                 <TableColumn fx:id="location" text="%apptList.location" />
                                 <TableColumn fx:id="contact" text="%apptList.contact" />
                                 <TableColumn fx:id="type" text="%apptList.type" />
-                                <TableColumn fx:id="start" text="%apptList.start" />
-                                <TableColumn fx:id="end" text="%apptList.end" />
+                                <TableColumn fx:id="start" text="%apptList.start" prefWidth="150"/>
+                                <TableColumn fx:id="end" text="%apptList.end" prefWidth="150" />
                                 <TableColumn fx:id="apptCustomerName" text="%apptList.custId" />
                             </columns>
                         </TableView>
-                        <Button layoutX="719.0" layoutY="28.0" mnemonicParsing="false" onAction="#newAppointment" text="%apptList.add" />
+                        <Button layoutX="819.0" layoutY="28.0" mnemonicParsing="false" onAction="#newAppointment" text="%apptList.add" />
                         <Label layoutX="36.0" layoutY="14.0" text="%apptList.heading">
                             <font>
                                 <Font size="36.0" />

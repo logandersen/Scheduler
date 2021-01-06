@@ -247,7 +247,7 @@ public class CustomerApptListController implements Initializable{
         dateSelectionText.setText(newMonth.getDisplayName(TextStyle.FULL,rs.getLocale()) + " " + dateRange.getYear());
         ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
         for (Appointment appt:allAppts) {
-            var startDate = appt.getStartLDT().toLocalDate();
+            var startDate = appt.getStartZDT().toLocalDate();
             var sameMonth = startDate.getMonth().getValue() == dateRange.getMonth().getValue();
             var sameYear = startDate.getYear() == dateRange.getYear();
             if(sameMonth && sameYear){
@@ -277,7 +277,7 @@ public class CustomerApptListController implements Initializable{
 
         ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
         for (Appointment appt:allAppts) {
-            var startDate = appt.getStartLDT().toLocalDate();
+            var startDate = appt.getStartZDT().toLocalDate();
             if(startDate.compareTo(firstDay) > -1 && startDate.compareTo(lastDay) < 1){
                 filteredAppts.add(appt);
             }

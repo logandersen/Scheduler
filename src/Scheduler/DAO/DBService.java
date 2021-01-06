@@ -4,6 +4,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 
 public class DBService {
@@ -20,7 +24,6 @@ public class DBService {
         int count = 0;
         while (rs.next()) {
             ++count;
-            // Get data from the current row and use it
         }
         if(count == 1){
             Username = username;
@@ -110,6 +113,9 @@ public class DBService {
         statement.execute();
 }
     public static boolean deleteCustomer(Connection conn, Customer customer) throws SQLException{
+        if(foundAssociatedAppointments(conn,customer.getId())){
+            return false;
+        }
         String qry = "DELETE FROM customers WHERE Customer_ID =?";
         PreparedStatement statement = conn.prepareStatement(qry);
         statement.setInt(1,customer.getId());
@@ -119,6 +125,7 @@ public class DBService {
         };
         return false;
     }
+
     private static Division getDivision(Connection conn, int id) throws SQLException {
         String qry = "SELECT * FROM first_level_divisions WHERE Division_ID = ?";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -146,6 +153,7 @@ public class DBService {
         }
         return Divisions;
     }
+
     private static Country getCountry(Connection conn, int id) throws SQLException {
         String qry = "SELECT * FROM countries WHERE Country_ID = ?";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -171,6 +179,7 @@ public class DBService {
         }
         return countries;
     }
+
     public static ObservableList<Appointment> getAllAppointments(Connection conn) throws SQLException {
         String qry = "SELECT appointments.*,Contact_Name,User_Name,Customer_Name " +
                 "FROM appointments " +
@@ -189,8 +198,14 @@ public class DBService {
             appt.setDescription(rs.getString("Description"));
             appt.setLocation(rs.getString("Location"));
             appt.setType(rs.getString("Type"));
-            appt.setStart(rs.getTimestamp("Start").toLocalDateTime());
-            appt.setEnd(rs.getTimestamp("End").toLocalDateTime());
+            var startTimestamp =rs.getTimestamp("Start");
+            var startLocal = startTimestamp.toLocalDateTime();
+            var startOffset = ZonedDateTime.ofInstant(startLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            appt.setStart(startOffset);
+            var endTimestamp =rs.getTimestamp("End");
+            var endLocal = endTimestamp.toLocalDateTime();
+            var endOffset = ZonedDateTime.ofInstant(endLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            appt.setEnd(endOffset);
             appt.setCreatedDate(rs.getDate("Create_Date"));
             appt.setCreatedBy(rs.getString("Created_By"));
             appt.setLastUpdate(rs.getTimestamp("Last_Update"));
@@ -205,6 +220,13 @@ public class DBService {
         }
         return appointments;
     }
+    public static boolean foundAssociatedAppointments(Connection conn, Integer custID) throws SQLException {
+        String qry = "SELECT * FROM appointments WHERE Customer_ID =" + custID;
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.execute();
+        var rs = statement.getResultSet();
+        return rs.next();
+    }
     public static void updateAppointment(Connection conn, Appointment appointment) throws SQLException {
         String qry = "UPDATE appointments SET Title=?,Description=?," +
                 "Location=?,Type=?,Start=?,End=?,Last_Update=?," +
@@ -214,8 +236,14 @@ public class DBService {
         statement.setString(2,appointment.getDescription());
         statement.setString(3,appointment.getLocation());
         statement.setString(4,appointment.getType());
-        statement.setTimestamp(5,Timestamp.valueOf(appointment.getStartLDT()));
-        statement.setTimestamp(6,Timestamp.valueOf(appointment.getEndLDT()));
+        var startZDT = appointment.getStartZDT();
+        var startInstant = startZDT.toInstant();
+        var startLocal = LocalDateTime.ofInstant(startInstant, ZoneOffset.UTC);
+        statement.setTimestamp(5,Timestamp.valueOf(startLocal));
+        var endZDT = appointment.getEndZDT();
+        var endInstant = endZDT.toInstant();
+        var endLocal = LocalDateTime.ofInstant(endInstant, ZoneOffset.UTC);
+        statement.setTimestamp(6,Timestamp.valueOf(endLocal));
         var utilDate = new java.util.Date();
         statement.setDate(7, new java.sql.Date(utilDate.getTime()));
         statement.setString(8,appointment.getLastUpdatedBy());
@@ -233,8 +261,14 @@ public class DBService {
         statement.setString(2,appointment.getDescription());
         statement.setString(3,appointment.getLocation());
         statement.setString(4,appointment.getType());
-        statement.setTimestamp(5,Timestamp.valueOf(appointment.getStartLDT()));
-        statement.setTimestamp(6,Timestamp.valueOf(appointment.getEndLDT()));
+        var startZDT = appointment.getStartZDT();
+        var startInstant = startZDT.toInstant();
+        var startLocal = LocalDateTime.ofInstant(startInstant, ZoneOffset.UTC);
+        statement.setTimestamp(5,Timestamp.valueOf(startLocal));
+        var endZDT = appointment.getEndZDT();
+        var endInstant = endZDT.toInstant();
+        var endLocal = LocalDateTime.ofInstant(endInstant, ZoneOffset.UTC);
+        statement.setTimestamp(6,Timestamp.valueOf(endLocal));
         statement.setTimestamp(7,new Timestamp(System.currentTimeMillis()));
         var utilDate = new java.util.Date();
         statement.setString(8,appointment.getCreatedBy());
@@ -255,6 +289,7 @@ public class DBService {
         };
         return false;
     }
+
     public static ObservableList<Contact> getAllContacts(Connection conn) throws SQLException{
         String qry = "SELECT * FROM contacts";
         PreparedStatement statement = conn.prepareStatement(qry);

@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Appointment {
@@ -12,8 +13,8 @@ public class Appointment {
     private String description;
     private String location;
     private String type;
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private ZonedDateTime start;
+    private ZonedDateTime end;
     private Date createdDate;
     private String createdBy;
     private Timestamp lastUpdate;
@@ -48,7 +49,7 @@ public class Appointment {
         return type;
     }
 
-    public LocalDateTime getStartLDT() {
+    public ZonedDateTime getStartZDT() {
         return start;
     }
     public String getStart(){
@@ -56,7 +57,7 @@ public class Appointment {
         return start.format(fullFormat);
     }
 
-    public LocalDateTime getEndLDT() {
+    public ZonedDateTime getEndZDT() {
         return end;
     }
     public String getEnd(){
@@ -123,11 +124,11 @@ public class Appointment {
         this.type = type;
     }
 
-    public void setStart(LocalDateTime start) {
+    public void setStart(ZonedDateTime start) {
         this.start = start;
     }
 
-    public void setEnd(LocalDateTime end) {
+    public void setEnd(ZonedDateTime end) {
         this.end = end;
     }
 

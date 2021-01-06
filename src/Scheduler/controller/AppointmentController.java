@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.sql.Timestamp;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -106,16 +106,16 @@ public class AppointmentController implements Initializable{
         CustomerCB.setValue(selectCustomer(selectedAppointment.getCustomerId()));
 
         var timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
-        StartDate.setValue(selectedAppointment.getStartLDT().toLocalDate());
+        StartDate.setValue(selectedAppointment.getStartZDT().toLocalDate());
         StartTimeCB.setValue(
                 selectTimeOption(
-                        selectedAppointment.getStartLDT().format(timeFormat)
+                        selectedAppointment.getStartZDT().format(timeFormat)
                 )
         );
-        EndDate.setValue(selectedAppointment.getEndLDT().toLocalDate());
+        EndDate.setValue(selectedAppointment.getEndZDT().toLocalDate());
         EndTimeCB.setValue(
                 selectTimeOption(
-                        selectedAppointment.getEndLDT().format(timeFormat)
+                        selectedAppointment.getEndZDT().format(timeFormat)
                 )
         );
     }
@@ -160,20 +160,20 @@ public class AppointmentController implements Initializable{
     @FXML
     private void delete(ActionEvent event) throws Exception{
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setContentText(rs.getString("cust.DeleteText"));
+        alert.setContentText(rs.getString("appt.DeleteText"));
         Optional<ButtonType> result = alert.showAndWait();
         if(result.get() != ButtonType.OK){return;}
 
         var deleted = DBService.deleteAppointment(conn,appointment);
         if(deleted){
             Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText(rs.getString("cust.Deleted"));
+            alert.setContentText(rs.getString("appt.Deleted") + ". ID: " + appointment.getId() + " " + rs.getString("apptList.type") + ": " + appointment.getType());
             alert.showAndWait();
             loadAppointmentList(event);
         }
         else{
             Alert failAlert = new Alert(Alert.AlertType.ERROR);
-            failAlert.setContentText(rs.getString("cust.DeleteFailed"));
+            failAlert.setContentText(rs.getString("appt.DeleteFailed"));
             failAlert.show();
         }
     }
@@ -197,13 +197,14 @@ public class AppointmentController implements Initializable{
         appt.setType(Type.getText());
         var timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
         var startTime = LocalTime.parse(StartTimeCB.getValue().getTimeValue(),timeFormat);
-        appt.setStart(LocalDateTime.of(StartDate.getValue(),startTime));
+        appt.setStart(ZonedDateTime.of(StartDate.getValue(),startTime, ZoneId.systemDefault()));
         var endTime = LocalTime.parse(EndTimeCB.getValue().getTimeValue(),timeFormat);
-        appt.setEnd(LocalDateTime.of(EndDate.getValue(),endTime));
+        appt.setEnd(ZonedDateTime.of(EndDate.getValue(),endTime, ZoneId.systemDefault()));
         appt.setLastUpdatedBy(userName);
         appt.setCustomerId(CustomerCB.getValue().getId());
         appt.setUserId(UserCB.getValue().getId());
         appt.setContactId(ContactCB.getValue().getId());
+        validateAppointmentTimes(appt.getStartZDT(),appt.getEndZDT());
         DBService.updateAppointment(conn,appt);
         loadAppointmentList(event);
     }
@@ -216,9 +217,9 @@ public class AppointmentController implements Initializable{
         appt.setType(Type.getText());
         var timeFormat = DateTimeFormatter.ofPattern("HH:mm a");
         var startTime = LocalTime.parse(StartTimeCB.getValue().getTimeValue(),timeFormat);
-        appt.setStart(LocalDateTime.of(StartDate.getValue(),startTime));
+        appt.setStart(ZonedDateTime.of(StartDate.getValue(),startTime, ZoneId.systemDefault()));
         var endTime = LocalTime.parse(EndTimeCB.getValue().getTimeValue(),timeFormat);
-        appt.setEnd(LocalDateTime.of(EndDate.getValue(),endTime));
+        appt.setEnd(ZonedDateTime.of(EndDate.getValue(),endTime, ZoneId.systemDefault()));
         appt.setCreatedBy(userName);
         appt.setLastUpdatedBy(userName);
         appt.setCustomerId(CustomerCB.getValue().getId());
@@ -226,6 +227,11 @@ public class AppointmentController implements Initializable{
         appt.setContactId(ContactCB.getValue().getId());
         DBService.insertAppointment(conn,appt);
         loadAppointmentList(event);
+    }
+    private void validateAppointmentTimes(ZonedDateTime start, ZonedDateTime end){
+        var toEst = start.withZoneSameInstant(ZoneId.of("America/New_York"));
+        var hourEst = toEst.getHour();
+        return;
     }
     private void loadAppointmentList(ActionEvent event) throws IOException {
         FXMLLoader custListLoader = new FXMLLoader();
