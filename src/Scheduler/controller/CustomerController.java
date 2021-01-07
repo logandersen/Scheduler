@@ -84,9 +84,9 @@ public class CustomerController implements Initializable{
         Phone.setText(String.valueOf(selectedCustomer.getPhone()));
         Address.setText(String.valueOf(selectedCustomer.getAddress()));
         PostalCode.setText(String.valueOf(selectedCustomer.getPostalCode()));
-        CreatedOn.setText(String.valueOf(selectedCustomer.getCreatedDate().toString()));
+        CreatedOn.setText(selectedCustomer.getCreatedDate());
         CreatedBy.setText(String.valueOf(selectedCustomer.getCreatedBy()));
-        LastUpdated.setText(String.valueOf(selectedCustomer.getLastUpdate().toString()));
+        LastUpdated.setText(selectedCustomer.getLastUpdate());
         LastUpdatedBy.setText(String.valueOf(selectedCustomer.getLastUpdatedBy()));
         var selectedDiv = selectDivision(selectedCustomer.getDivisionID());
         CountryCB.setValue(selectCountry(selectedDiv.countryID));

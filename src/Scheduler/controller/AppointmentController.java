@@ -97,9 +97,9 @@ public class AppointmentController implements Initializable{
         Description.setText(String.valueOf(selectedAppointment.getDescription()));
         Location.setText(String.valueOf(selectedAppointment.getLocation()));
         Type.setText(String.valueOf(selectedAppointment.getType()));
-        CreatedOn.setText(String.valueOf(selectedAppointment.getCreatedDate().toString()));
+        CreatedOn.setText(selectedAppointment.getCreatedDate());
         CreatedBy.setText(String.valueOf(selectedAppointment.getCreatedBy()));
-        LastUpdated.setText(String.valueOf(selectedAppointment.getLastUpdate().toString()));
+        LastUpdated.setText(selectedAppointment.getLastUpdate());
         LastUpdatedBy.setText(String.valueOf(selectedAppointment.getLastUpdatedBy()));
         ContactCB.setValue(selectContact(selectedAppointment.getContactId()));
         UserCB.setValue(selectUser(selectedAppointment.getUserId()));
@@ -204,7 +204,9 @@ public class AppointmentController implements Initializable{
         appt.setCustomerId(CustomerCB.getValue().getId());
         appt.setUserId(UserCB.getValue().getId());
         appt.setContactId(ContactCB.getValue().getId());
-        validateAppointmentTimes(appt.getStartZDT(),appt.getEndZDT());
+        if(!validateAppointmentTimes(appt.getStartZDT(),appt.getEndZDT())){
+            return;
+        }
         DBService.updateAppointment(conn,appt);
         loadAppointmentList(event);
     }
@@ -215,7 +217,7 @@ public class AppointmentController implements Initializable{
         appt.setDescription(Description.getText());
         appt.setLocation(Location.getText());
         appt.setType(Type.getText());
-        var timeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+        var timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
         var startTime = LocalTime.parse(StartTimeCB.getValue().getTimeValue(),timeFormat);
         appt.setStart(ZonedDateTime.of(StartDate.getValue(),startTime, ZoneId.systemDefault()));
         var endTime = LocalTime.parse(EndTimeCB.getValue().getTimeValue(),timeFormat);
@@ -225,13 +227,29 @@ public class AppointmentController implements Initializable{
         appt.setCustomerId(CustomerCB.getValue().getId());
         appt.setUserId(UserCB.getValue().getId());
         appt.setContactId(ContactCB.getValue().getId());
+        if(!validateAppointmentTimes(appt.getStartZDT(),appt.getEndZDT())){
+            return;
+        }
         DBService.insertAppointment(conn,appt);
         loadAppointmentList(event);
     }
-    private void validateAppointmentTimes(ZonedDateTime start, ZonedDateTime end){
-        var toEst = start.withZoneSameInstant(ZoneId.of("America/New_York"));
-        var hourEst = toEst.getHour();
-        return;
+    private boolean validateAppointmentTimes(ZonedDateTime start, ZonedDateTime end){
+        var startEst = start.withZoneSameInstant(ZoneId.of("America/New_York"));
+        var startTimeEst = startEst.toLocalTime();
+
+        var endEst = end.withZoneSameInstant(ZoneId.of("America/New_York"));
+        var endTimeEst = endEst.toLocalTime();
+
+        var busStart = LocalTime.of(8,0,0);
+        var busEnd = LocalTime.of(22,0,0);
+
+        if(startTimeEst.isBefore(busStart) || startTimeEst.isAfter(busEnd) || endTimeEst.isBefore(busStart) || endTimeEst.isAfter(busEnd)) {// outside of business hours
+            Alert failAlert = new Alert(Alert.AlertType.ERROR);
+            failAlert.setContentText(rs.getString("appt.NotBusinessHours"));
+            failAlert.show();
+            return false;
+        }
+        return true;
     }
     private void loadAppointmentList(ActionEvent event) throws IOException {
         FXMLLoader custListLoader = new FXMLLoader();

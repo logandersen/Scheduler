@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Customer {
     private int id;
@@ -11,9 +13,9 @@ public class Customer {
     private String address;
     private String postalCode;
     private String phone;
-    private Date createdDate;
+    private ZonedDateTime createdDate;
     private String createdBy;
-    private Timestamp lastUpdate;
+    private ZonedDateTime lastUpdate;
     private String lastUpdatedBy;
     private int divisionID;
     private String divisionName;
@@ -28,9 +30,15 @@ public class Customer {
     public String getAddress(){return address;}
     public String getPostalCode(){return postalCode;}
     public String getPhone(){return phone;}
-    public Date getCreatedDate(){return createdDate;}
+    public String getCreatedDate() {
+        var fullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
+        return createdDate.format(fullFormat);
+    }
     public String getCreatedBy(){return createdBy;}
-    public Timestamp getLastUpdate(){return lastUpdate;}
+    public String getLastUpdate() {
+        var fullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
+        return lastUpdate.format(fullFormat);
+    }
     public String getLastUpdatedBy(){return lastUpdatedBy;}
     public int getDivisionID(){return divisionID;}
     public String getDivisionName(){return divisionName;}
@@ -57,7 +65,7 @@ public class Customer {
         this.phone = phone;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(ZonedDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -65,7 +73,7 @@ public class Customer {
         this.createdBy = createdBy;
     }
 
-    public void setLastUpdate(Timestamp lastUpdate) {
+    public void setLastUpdate(ZonedDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 

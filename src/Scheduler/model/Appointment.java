@@ -15,9 +15,9 @@ public class Appointment {
     private String type;
     private ZonedDateTime start;
     private ZonedDateTime end;
-    private Date createdDate;
+    private ZonedDateTime createdDate;
     private String createdBy;
-    private Timestamp lastUpdate;
+    private ZonedDateTime lastUpdate;
     private String lastUpdatedBy;
     private int customerId;
     private String customerName;
@@ -64,18 +64,22 @@ public class Appointment {
         var fullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
         return end.format(fullFormat);
     }
-    public Date getCreatedDate() {
-        return createdDate;
+    public String getCreatedDate() {
+        var fullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
+        return createdDate.format(fullFormat);
     }
 
     public String getCreatedBy() {
         return createdBy;
     }
 
-    public Timestamp getLastUpdate() {
+    public ZonedDateTime getLastUpdateZDT() {
         return lastUpdate;
     }
-
+    public String getLastUpdate() {
+        var fullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
+        return lastUpdate.format(fullFormat);
+    }
     public String getLastUpdatedBy() {
         return lastUpdatedBy;
     }
@@ -132,7 +136,7 @@ public class Appointment {
         this.end = end;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(ZonedDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -140,7 +144,7 @@ public class Appointment {
         this.createdBy = createdBy;
     }
 
-    public void setLastUpdate(Timestamp lastUpdate) {
+    public void setLastUpdate(ZonedDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 

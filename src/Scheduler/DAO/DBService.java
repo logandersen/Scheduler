@@ -4,10 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 
 public class DBService {
@@ -63,9 +60,15 @@ public class DBService {
             customer.setAddress(rs.getString("Address"));
             customer.setPhone(rs.getString("Phone"));
             customer.setPostalCode(rs.getString("Postal_Code"));
-            customer.setCreatedDate(rs.getDate("Create_Date"));
+            var createTimestamp =rs.getTimestamp("Create_Date");
+            var createLocal = createTimestamp.toLocalDateTime();
+            var createOffset = ZonedDateTime.ofInstant(createLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            customer.setCreatedDate(createOffset);
             customer.setCreatedBy(rs.getString("Created_By"));
-            customer.setLastUpdate(rs.getTimestamp("Last_Update"));
+            var updateTimestamp =rs.getTimestamp("Last_Update");
+            var updateLocal = updateTimestamp.toLocalDateTime();
+            var updateOffset = ZonedDateTime.ofInstant(updateLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            customer.setLastUpdate(updateOffset);
             customer.setLastUpdatedBy(rs.getString("Last_Updated_By"));
             customer.setDivisionID(rs.getInt("Division_ID"));
 
@@ -87,8 +90,8 @@ public class DBService {
         statement.setString(2,customer.getAddress());
         statement.setString(3, customer.getPhone());
         statement.setString(4, customer.getPostalCode());
-        var utilDate = new java.util.Date();
-        statement.setDate(5, new java.sql.Date(utilDate.getTime()));
+        var nowLocal = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        statement.setTimestamp(5, Timestamp.valueOf(nowLocal));
         statement.setString(6,customer.getLastUpdatedBy());
         statement.setInt(7,customer.getDivisionID());
         statement.setInt(8,customer.getId());
@@ -103,10 +106,10 @@ public class DBService {
         statement.setString(2,customer.getAddress());
         statement.setString(3, customer.getPhone());
         statement.setString(4, customer.getPostalCode());
-        var utilDate = new java.util.Date();
-        statement.setTimestamp(5,new Timestamp(System.currentTimeMillis()));
+        var nowLocal = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        statement.setTimestamp(5,Timestamp.valueOf(nowLocal));
         statement.setString(6,customer.getCreatedBy());
-        statement.setDate(7, new java.sql.Date(utilDate.getTime()));
+        statement.setTimestamp(7, Timestamp.valueOf(nowLocal));
         statement.setString(8,customer.getLastUpdatedBy());
         statement.setInt(9,customer.getDivisionID());
 
@@ -206,9 +209,15 @@ public class DBService {
             var endLocal = endTimestamp.toLocalDateTime();
             var endOffset = ZonedDateTime.ofInstant(endLocal,ZoneOffset.UTC,ZoneId.systemDefault());
             appt.setEnd(endOffset);
-            appt.setCreatedDate(rs.getDate("Create_Date"));
+            var createTimestamp =rs.getTimestamp("Create_Date");
+            var createLocal = createTimestamp.toLocalDateTime();
+            var createOffset = ZonedDateTime.ofInstant(createLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            appt.setCreatedDate(createOffset);
             appt.setCreatedBy(rs.getString("Created_By"));
-            appt.setLastUpdate(rs.getTimestamp("Last_Update"));
+            var updateTimestamp =rs.getTimestamp("Last_Update");
+            var updateLocal = updateTimestamp.toLocalDateTime();
+            var updateOffset = ZonedDateTime.ofInstant(updateLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            appt.setLastUpdate(updateOffset);
             appt.setLastUpdatedBy(rs.getString("Last_Updated_By"));
             appt.setCustomerId(rs.getInt("Customer_ID"));
             appt.setUserId(rs.getInt("User_ID"));
@@ -244,8 +253,8 @@ public class DBService {
         var endInstant = endZDT.toInstant();
         var endLocal = LocalDateTime.ofInstant(endInstant, ZoneOffset.UTC);
         statement.setTimestamp(6,Timestamp.valueOf(endLocal));
-        var utilDate = new java.util.Date();
-        statement.setDate(7, new java.sql.Date(utilDate.getTime()));
+        var nowLocal = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        statement.setTimestamp(7,Timestamp.valueOf(nowLocal));
         statement.setString(8,appointment.getLastUpdatedBy());
         statement.setInt(9,appointment.getCustomerId());
         statement.setInt(10,appointment.getUserId());
@@ -269,10 +278,11 @@ public class DBService {
         var endInstant = endZDT.toInstant();
         var endLocal = LocalDateTime.ofInstant(endInstant, ZoneOffset.UTC);
         statement.setTimestamp(6,Timestamp.valueOf(endLocal));
-        statement.setTimestamp(7,new Timestamp(System.currentTimeMillis()));
-        var utilDate = new java.util.Date();
+        var nowLocal = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        statement.setTimestamp(7,Timestamp.valueOf(nowLocal));
+
         statement.setString(8,appointment.getCreatedBy());
-        statement.setDate(9, new java.sql.Date(utilDate.getTime()));
+        statement.setTimestamp(9, Timestamp.valueOf(nowLocal));
         statement.setString(10,appointment.getLastUpdatedBy());
         statement.setInt(11,appointment.getCustomerId());
         statement.setInt(12,appointment.getUserId());
