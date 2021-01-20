@@ -48,7 +48,8 @@ public class LoginController implements Initializable{
             custListLoader.setLocation(getClass().getResource("../view/CustomerApptList.fxml"));
             custListLoader.setResources(rs);
             Parent custListParent = custListLoader.load();
-
+            CustomerApptListController custController = custListLoader.getController();
+            custController.appointmentAlert();
             Scene partScene = new Scene(custListParent);
             Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             appStage.setScene(partScene);

@@ -92,19 +92,16 @@ public class CustomerApptListController implements Initializable{
 
     private Connection conn;
     private ResourceBundle rs;
-    private boolean apptTabSelected;
     private LocalDate dateRange;
     private Calendar weekRange;
     private LocalDate firstDay;
     private LocalDate lastDay;
+    private boolean initialLogin;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.rs = resourceBundle;
         this.conn = LoginController.getConn();
-        if(apptTabSelected){
-            setApptTab();
-        }
         try {
             //Customer Table setup
             customerTableView.setItems(DBService.getAllCustomers(conn));
@@ -171,7 +168,6 @@ public class CustomerApptListController implements Initializable{
         displayBy.selectToggle(monthToggle);
         setCurrentMonth();
     }
-
     private void editCustomer(Customer cust, MouseEvent event) throws Exception{
         FXMLLoader custLoader = new FXMLLoader();
         custLoader.setLocation(getClass().getResource("../view/Customer.fxml"));
@@ -228,12 +224,9 @@ public class CustomerApptListController implements Initializable{
         appStage.setScene(partScene);
         appStage.show();
     }
-
-    private void setApptTab(){
+    @FXML
+    public void setApptTab(){
         tabPane.getSelectionModel().select(1);
-    }
-    public void setApptTabSelected(){
-        this.apptTabSelected = true;
     }
     @FXML
     private void setCurrentMonth(){
@@ -307,5 +300,26 @@ public class CustomerApptListController implements Initializable{
             weekRange.add(Calendar.WEEK_OF_YEAR,1);
             setWeekFilter();
         }
+    }
+
+    public void appointmentAlert() throws SQLException {
+
+
+        var appts = DBService.apptWithinFifteen(conn);
+        var alertString = new StringBuilder();
+        appts.forEach(appt ->{
+            var customer = appt.getCustomerName();
+            var apptId = Integer.toString(appt.getId());
+            var apptDateTime = appt.getStart();
+            alertString.append("Appointment:" + apptId + " with " + customer + " is at " + apptDateTime + "\n");
+        });
+
+        var alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Appointment Notification");
+        alert.setContentText(alertString.toString());
+        alert.getDialogPane().setMinWidth(500);
+        alert.setResizable(true);
+        alert.showAndWait();
+
     }
 }

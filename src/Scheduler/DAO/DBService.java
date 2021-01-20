@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 
 public class DBService {
@@ -236,6 +237,24 @@ public class DBService {
         var rs = statement.getResultSet();
         return rs.next();
     }
+    public static boolean apptSameCustomerSameTime(Connection conn, String start, String end,Integer custID,Integer apptId) throws SQLException{
+        String qry = "SELECT * FROM appointments " +
+            "WHERE Customer_ID=? AND Appointment_ID<>? AND ((Start <=? AND End >=?)" +
+            "|| (Start <=? AND End >=?)" +
+            "|| (Start >=? AND End <=?));";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.setInt(1,custID);
+        statement.setInt(2,apptId);
+        statement.setString(3,start);
+        statement.setString(4,start);
+        statement.setString(5,end);
+        statement.setString(6,end);
+        statement.setString(7,start);
+        statement.setString(8,end);
+        statement.execute();
+        var rs = statement.getResultSet();
+        return rs.next();
+    }
     public static void updateAppointment(Connection conn, Appointment appointment) throws SQLException {
         String qry = "UPDATE appointments SET Title=?,Description=?," +
                 "Location=?,Type=?,Start=?,End=?,Last_Update=?," +
@@ -245,14 +264,17 @@ public class DBService {
         statement.setString(2,appointment.getDescription());
         statement.setString(3,appointment.getLocation());
         statement.setString(4,appointment.getType());
+        var timestampFormat =DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         var startZDT = appointment.getStartZDT();
         var startInstant = startZDT.toInstant();
         var startLocal = LocalDateTime.ofInstant(startInstant, ZoneOffset.UTC);
-        statement.setTimestamp(5,Timestamp.valueOf(startLocal));
+        var startString = startLocal.format(timestampFormat);
+        statement.setTimestamp(5,Timestamp.valueOf(startString));
         var endZDT = appointment.getEndZDT();
         var endInstant = endZDT.toInstant();
         var endLocal = LocalDateTime.ofInstant(endInstant, ZoneOffset.UTC);
-        statement.setTimestamp(6,Timestamp.valueOf(endLocal));
+        var endString = endLocal.format(timestampFormat);
+        statement.setTimestamp(6,Timestamp.valueOf(endString));
         var nowLocal = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         statement.setTimestamp(7,Timestamp.valueOf(nowLocal));
         statement.setString(8,appointment.getLastUpdatedBy());
@@ -270,14 +292,17 @@ public class DBService {
         statement.setString(2,appointment.getDescription());
         statement.setString(3,appointment.getLocation());
         statement.setString(4,appointment.getType());
+        var timestampFormat =DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         var startZDT = appointment.getStartZDT();
         var startInstant = startZDT.toInstant();
         var startLocal = LocalDateTime.ofInstant(startInstant, ZoneOffset.UTC);
-        statement.setTimestamp(5,Timestamp.valueOf(startLocal));
+        var startString = startLocal.format(timestampFormat);
+        statement.setTimestamp(5,Timestamp.valueOf(startString));
         var endZDT = appointment.getEndZDT();
         var endInstant = endZDT.toInstant();
         var endLocal = LocalDateTime.ofInstant(endInstant, ZoneOffset.UTC);
-        statement.setTimestamp(6,Timestamp.valueOf(endLocal));
+        var endString = endLocal.format(timestampFormat);
+        statement.setTimestamp(6,Timestamp.valueOf(endString));
         var nowLocal = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         statement.setTimestamp(7,Timestamp.valueOf(nowLocal));
 
@@ -315,5 +340,53 @@ public class DBService {
             contacts.add(contact);
         }
         return contacts;
+    }
+
+    public static ObservableList<Appointment> apptWithinFifteen(Connection conn) throws SQLException {
+        String qry = "SELECT * FROM appointments " +
+                "WHERE TIMEDIFF(Start,?) <= TIME('00:15:00') AND TIMEDIFF(Start,?) >= TIME('-00:15:00');";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        var nowLocal = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        var dateTimeString = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        var nowString = nowLocal.format(dateTimeString);
+        statement.setString(1,nowString);
+        statement.setString(2,nowString);
+        statement.execute();
+        var rs = statement.getResultSet();
+        ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+        while(rs.next()){
+            var appt = new Appointment();
+            appt.setId(rs.getInt("Appointment_ID"));
+            appt.setTitle(rs.getString("Title"));
+            appt.setDescription(rs.getString("Description"));
+            appt.setLocation(rs.getString("Location"));
+            appt.setType(rs.getString("Type"));
+            var startTimestamp =rs.getTimestamp("Start");
+            var startLocal = startTimestamp.toLocalDateTime();
+            var startOffset = ZonedDateTime.ofInstant(startLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            appt.setStart(startOffset);
+            var endTimestamp =rs.getTimestamp("End");
+            var endLocal = endTimestamp.toLocalDateTime();
+            var endOffset = ZonedDateTime.ofInstant(endLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            appt.setEnd(endOffset);
+            var createTimestamp =rs.getTimestamp("Create_Date");
+            var createLocal = createTimestamp.toLocalDateTime();
+            var createOffset = ZonedDateTime.ofInstant(createLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            appt.setCreatedDate(createOffset);
+            appt.setCreatedBy(rs.getString("Created_By"));
+            var updateTimestamp =rs.getTimestamp("Last_Update");
+            var updateLocal = updateTimestamp.toLocalDateTime();
+            var updateOffset = ZonedDateTime.ofInstant(updateLocal,ZoneOffset.UTC,ZoneId.systemDefault());
+            appt.setLastUpdate(updateOffset);
+            appt.setLastUpdatedBy(rs.getString("Last_Updated_By"));
+            appt.setCustomerId(rs.getInt("Customer_ID"));
+            appt.setUserId(rs.getInt("User_ID"));
+            appt.setContactId(rs.getInt("Contact_ID"));
+            appt.setContactName(rs.getString("Contact_Name"));
+            appt.setCustomerName(rs.getString("Customer_Name"));
+            appt.setUserName(rs.getString("User_Name"));
+            appointments.add(appt);
+        }
+        return appointments;
     }
 }

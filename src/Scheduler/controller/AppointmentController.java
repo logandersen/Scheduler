@@ -204,7 +204,7 @@ public class AppointmentController implements Initializable{
         appt.setCustomerId(CustomerCB.getValue().getId());
         appt.setUserId(UserCB.getValue().getId());
         appt.setContactId(ContactCB.getValue().getId());
-        if(!validateAppointmentTimes(appt.getStartZDT(),appt.getEndZDT())){
+        if(!validateAppointmentTimes(appt.getStartZDT(),appt.getEndZDT(),appt.getCustomerId(),appt.getId())){
             return;
         }
         DBService.updateAppointment(conn,appt);
@@ -227,13 +227,13 @@ public class AppointmentController implements Initializable{
         appt.setCustomerId(CustomerCB.getValue().getId());
         appt.setUserId(UserCB.getValue().getId());
         appt.setContactId(ContactCB.getValue().getId());
-        if(!validateAppointmentTimes(appt.getStartZDT(),appt.getEndZDT())){
+        if(!validateAppointmentTimes(appt.getStartZDT(),appt.getEndZDT(),appt.getCustomerId(), appt.getId())){
             return;
         }
         DBService.insertAppointment(conn,appt);
         loadAppointmentList(event);
     }
-    private boolean validateAppointmentTimes(ZonedDateTime start, ZonedDateTime end){
+    private boolean validateAppointmentTimes(ZonedDateTime start, ZonedDateTime end, Integer custID, Integer apptId) throws SQLException {
         var startEst = start.withZoneSameInstant(ZoneId.of("America/New_York"));
         var startTimeEst = startEst.toLocalTime();
 
@@ -249,6 +249,20 @@ public class AppointmentController implements Initializable{
             failAlert.show();
             return false;
         }
+        //Check for appointments same customer overlapping
+        var startInstant = start.toInstant();
+        var startLocal = LocalDateTime.ofInstant(startInstant, ZoneOffset.UTC);
+        var sqlDateTimeString = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        var startString = startLocal.format(sqlDateTimeString);
+        var endInstant = end.toInstant();
+        var endLocal = LocalDateTime.ofInstant(endInstant, ZoneOffset.UTC);
+        var endString = endLocal.format(sqlDateTimeString);
+        if(DBService.apptSameCustomerSameTime(conn,startString,endString,custID,apptId)){
+            Alert failAlert = new Alert(Alert.AlertType.ERROR);
+            failAlert.setContentText(rs.getString("appt.Overlapping"));
+            failAlert.show();
+            return false;
+        }
         return true;
     }
     private void loadAppointmentList(ActionEvent event) throws IOException {
@@ -257,7 +271,7 @@ public class AppointmentController implements Initializable{
         custListLoader.setResources(rs);
         Parent custListParent = custListLoader.load();
         CustomerApptListController controller = custListLoader.getController();
-        controller.setApptTabSelected();
+        controller.setApptTab();
         Scene partScene = new Scene(custListParent);
         Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         appStage.setScene(partScene);
