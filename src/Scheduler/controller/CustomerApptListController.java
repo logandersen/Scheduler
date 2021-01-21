@@ -307,19 +307,30 @@ public class CustomerApptListController implements Initializable{
 
         var appts = DBService.apptWithinFifteen(conn);
         var alertString = new StringBuilder();
-        appts.forEach(appt ->{
-            var customer = appt.getCustomerName();
-            var apptId = Integer.toString(appt.getId());
-            var apptDateTime = appt.getStart();
-            alertString.append("Appointment:" + apptId + " with " + customer + " is at " + apptDateTime + "\n");
-        });
-
-        var alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Appointment Notification");
-        alert.setContentText(alertString.toString());
-        alert.getDialogPane().setMinWidth(500);
-        alert.setResizable(true);
-        alert.showAndWait();
+        if(appts.size() > 0) {
+            appts.forEach(appt -> {
+                var customer = appt.getCustomerName();
+                var apptId = Integer.toString(appt.getId());
+                var apptDateTime = appt.getStart();
+                alertString.append(
+                        rs.getString("appt.heading") + ":" + apptId + " "
+                                + rs.getString("appt.With") + " " + customer + " "
+                                + rs.getString("appt.IsAt") + " " + apptDateTime + "\n"
+                );
+            });
+            var alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText(alertString.toString());
+            alert.getDialogPane().setMinWidth(500);
+            alert.setResizable(true);
+            alert.showAndWait();
+        }
+        else{
+            var alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText(rs.getString("appt.NoAppt"));
+            alert.getDialogPane().setMinWidth(500);
+            alert.setResizable(true);
+            alert.showAndWait();
+        }
 
     }
 }
