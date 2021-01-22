@@ -3,6 +3,7 @@ package Scheduler.controller;
 import Scheduler.DAO.DBConnector;
 import Scheduler.DAO.DBService;
 import Scheduler.model.Appointment;
+import Scheduler.model.ApptGroupCount;
 import Scheduler.model.Customer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -77,6 +78,16 @@ public class CustomerApptListController implements Initializable{
     @FXML
     private TableColumn<Appointment, String> apptCustomerName;
     private ObservableList<Appointment> allAppts;
+
+    @FXML
+    private TableView<ApptGroupCount> reportTableView;
+    @FXML
+    private TableColumn<ApptGroupCount, String> repMonth;
+    @FXML
+    private TableColumn<ApptGroupCount, String> repType;
+    @FXML
+    private TableColumn<ApptGroupCount, String> repCount;
+    private ObservableList<ApptGroupCount> apptsGroupCount;
 
     @FXML
     private TabPane tabPane;
@@ -158,6 +169,13 @@ public class CustomerApptListController implements Initializable{
                 });
                 return row;
             });
+
+            //Report Table setup
+            apptsGroupCount = DBService.apptGroupCount(conn);
+            reportTableView.setItems(apptsGroupCount);
+            repMonth.setCellValueFactory(new PropertyValueFactory<ApptGroupCount, String>("Month"));
+            repType.setCellValueFactory(new PropertyValueFactory<ApptGroupCount, String>("Type"));
+            repCount.setCellValueFactory(new PropertyValueFactory<ApptGroupCount, String>("Count"));
 
         } catch (SQLException ex) {
             ex.printStackTrace();

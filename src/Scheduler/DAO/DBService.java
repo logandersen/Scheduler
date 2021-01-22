@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 public class DBService {
 
     private static String Username;
+    private static int UserID;
 
     public static boolean authenticate(Connection conn, String username, String password) throws SQLException{
         String qry = "SELECT * FROM users WHERE User_Name = ? AND BINARY Password = ?";
@@ -21,9 +22,7 @@ public class DBService {
         var rs = statement.getResultSet();
         int count = 0;
         while (rs.next()) {
-            ++count;
-        }
-        if(count == 1){
+            UserID = rs.getInt("User_ID");
             Username = username;
             return true;
         }
@@ -341,13 +340,14 @@ public class DBService {
     public static ObservableList<Appointment> apptWithinFifteen(Connection conn) throws SQLException {
         String qry = "SELECT appointments.*,Customer_Name FROM appointments " +
                 "LEFT JOIN customers ON customers.Customer_ID=appointments.Customer_ID " +
-                "WHERE TIMEDIFF(Start,?) <= TIME('00:15:00') AND TIMEDIFF(Start,?) >= TIME('-00:15:00');";
+                "WHERE TIMEDIFF(Start,?) <= TIME('00:15:00') AND TIMEDIFF(Start,?) >= TIME('-00:15:00') AND User_ID = ?;";
         PreparedStatement statement = conn.prepareStatement(qry);
         var nowLocal = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         var dateTimeString = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         var nowString = nowLocal.format(dateTimeString);
         statement.setString(1,nowString);
         statement.setString(2,nowString);
+        statement.setInt(3,UserID);
         statement.execute();
         var rs = statement.getResultSet();
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
@@ -362,5 +362,22 @@ public class DBService {
             appointments.add(appt);
         }
         return appointments;
+    }
+    public static ObservableList<ApptGroupCount> apptGroupCount(Connection conn) throws SQLException {
+        String qry = "SELECT date_format(Start, '%m-%Y') AS Month,Type, count(Appointment_ID) AS Count " +
+            "FROM WJ05WDT.appointments " +
+            "GROUP BY Month,Type;";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.execute();
+        var rs = statement.getResultSet();
+        ObservableList<ApptGroupCount> apptGroupCounts = FXCollections.observableArrayList();
+        while(rs.next()){
+            var appt = new ApptGroupCount();
+            appt.setMonth(rs.getString("Month"));
+            appt.setType(rs.getString("Type"));
+            appt.setCount(rs.getInt("Count"));
+            apptGroupCounts.add(appt);
+        }
+        return apptGroupCounts;
     }
 }

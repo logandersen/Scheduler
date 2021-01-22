@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
@@ -20,7 +23,7 @@
                      <children>
                         <TableView fx:id="customerTableView" layoutX="36.0" layoutY="80.0" prefHeight="603.0" prefWidth="895.0">
                            <columns>
-                              <TableColumn fx:id="customerName" text="%custList.Name" prefWidth="150"/>
+                              <TableColumn fx:id="customerName" prefWidth="150" text="%custList.Name" />
                               <TableColumn fx:id="address" text="%custList.Address" />
                               <TableColumn fx:id="postalCode" text="%custList.PostalCode" />
                               <TableColumn fx:id="phone" text="%custList.Phone" />
@@ -52,8 +55,8 @@
                                 <TableColumn fx:id="location" text="%apptList.location" />
                                 <TableColumn fx:id="contact" text="%apptList.contact" />
                                 <TableColumn fx:id="type" text="%apptList.type" />
-                                <TableColumn fx:id="start" text="%apptList.start" prefWidth="150"/>
-                                <TableColumn fx:id="end" text="%apptList.end" prefWidth="150" />
+                                <TableColumn fx:id="start" prefWidth="150" text="%apptList.start" />
+                                <TableColumn fx:id="end" prefWidth="150" text="%apptList.end" />
                                 <TableColumn fx:id="apptCustomerName" text="%apptList.custId" />
                             </columns>
                         </TableView>
@@ -63,16 +66,37 @@
                                 <Font size="36.0" />
                             </font>
                         </Label>
-                        <Button fx:id="prevBtn" layoutX="502.0" layoutY="28.0" mnemonicParsing="false" text="&lt;" onAction="#prevDate" />
-                        <Button fx:id="nextBtn" layoutX="686.0" layoutY="28.0" mnemonicParsing="false" text="&gt;" onAction="#nextDate"/>
+                        <Button fx:id="prevBtn" layoutX="502.0" layoutY="28.0" mnemonicParsing="false" onAction="#prevDate" text="&lt;" />
+                        <Button fx:id="nextBtn" layoutX="686.0" layoutY="28.0" mnemonicParsing="false" onAction="#nextDate" text="&gt;" />
                         <Label fx:id="dateSelectionText" alignment="CENTER" layoutX="532.0" layoutY="32.0" prefHeight="17.0" prefWidth="152.0" />
-                        <ToggleButton fx:id="monthToggle" layoutX="342.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="%appt.month" onAction="#setCurrentMonth" />
-                        <ToggleButton fx:id="weekToggle" layoutX="405.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="68.0" text="%appt.week" onAction="#setCurrentWeek"/>
+                        <ToggleButton fx:id="monthToggle" layoutX="342.0" layoutY="28.0" mnemonicParsing="false" onAction="#setCurrentMonth" prefHeight="25.0" prefWidth="59.0" text="%appt.month" />
+                        <ToggleButton fx:id="weekToggle" layoutX="405.0" layoutY="28.0" mnemonicParsing="false" onAction="#setCurrentWeek" prefHeight="25.0" prefWidth="68.0" text="%appt.week" />
                         <Label alignment="CENTER" layoutX="332.0" layoutY="6.0" prefHeight="17.0" prefWidth="157.0" text="%appt.displayBy" />
                     </children>
                 </AnchorPane>
             </content>
           </Tab>
+            <Tab text="%report.Tab">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="36.0" layoutY="23.0" text="%report.Select">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="reportSelectCB" layoutX="203.0" layoutY="28.0" prefWidth="150.0" />
+                        <TableView layoutX="36.0" layoutY="76.0" prefHeight="623.0" prefWidth="905.0" fx:id="reportTableView">
+                          <columns>
+                            <TableColumn fx:id="repMonth" prefWidth="100.0" text="%report.Month" />
+                            <TableColumn fx:id="repType" prefWidth="100.0" text="%report.Type"/>
+                            <TableColumn fx:id="repCount" prefWidth="75.0" text="%report.Count" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
         </tabs>
       </TabPane>
    </children>
