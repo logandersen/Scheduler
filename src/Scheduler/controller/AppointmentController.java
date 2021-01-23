@@ -68,6 +68,7 @@ public class AppointmentController implements Initializable{
     private ObservableList<User> users;
     private ObservableList<TimeOption> timeOptions;
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         conn = LoginController.getConn();

@@ -80,18 +80,32 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Label layoutX="36.0" layoutY="23.0" text="%report.Select">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                        </Label>
-                        <ComboBox fx:id="reportSelectCB" layoutX="203.0" layoutY="28.0" prefWidth="150.0" />
-                        <TableView layoutX="36.0" layoutY="76.0" prefHeight="623.0" prefWidth="905.0" fx:id="reportTableView">
-                          <columns>
-                            <TableColumn fx:id="repMonth" prefWidth="100.0" text="%report.Month" />
-                            <TableColumn fx:id="repType" prefWidth="100.0" text="%report.Type"/>
-                            <TableColumn fx:id="repCount" prefWidth="75.0" text="%report.Count" />
-                          </columns>
+                         <Label layoutX="36.0" layoutY="23.0" text="%report.Select">
+                             <font>
+                                 <Font size="24.0" />
+                             </font>
+                         </Label>
+                         <ComboBox fx:id="reportSelectCB" onAction="#reportSelected" layoutX="203.0" layoutY="28.0" prefWidth="150.0" />
+                         <TableView layoutX="36.0" layoutY="76.0" prefHeight="623.0" prefWidth="905.0" fx:id="reportTableView">
+                             <columns>
+                                 <TableColumn fx:id="repMonth" prefWidth="100.0" text="%report.Month" />
+                                 <TableColumn fx:id="repType" prefWidth="100.0" text="%report.Type"/>
+                                 <TableColumn fx:id="repCount" prefWidth="75.0" text="%report.Count" />
+                             </columns>
+                         </TableView>
+                        <ComboBox fx:id="reportContactCB" layoutX="203.0" layoutY="65.0" prefWidth="150.0" visible="false" onAction="#contactSelected"/>
+                        <Label fx:id="selectContactLbl" layoutX="72.0" layoutY="69.0" prefHeight="17.0" prefWidth="118.0" text="%report.SelectContact" visible="false"/>
+                        <TableView fx:id="repApptTableView" layoutX="36.0" layoutY="100.0" prefHeight="603.0" prefWidth="904.0" visible="false">
+                           <columns>
+                              <TableColumn fx:id="repId" text="%apptList.apptId" />
+                              <TableColumn fx:id="repTitle" text="%apptList.title" />
+                              <TableColumn fx:id="repDescription" text="%apptList.desc" />
+                              <TableColumn fx:id="repLocation" text="%apptList.location" />
+                              <TableColumn fx:id="repApptType" text="%apptList.type" />
+                              <TableColumn fx:id="repStart" prefWidth="150" text="%apptList.start" />
+                              <TableColumn fx:id="repEnd" prefWidth="150" text="%apptList.end" />
+                              <TableColumn fx:id="repCustID" text="%apptList.custId" />
+                           </columns>
                         </TableView>
                      </children>
                   </AnchorPane>

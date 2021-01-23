@@ -2,9 +2,7 @@ package Scheduler.controller;
 
 import Scheduler.DAO.DBConnector;
 import Scheduler.DAO.DBService;
-import Scheduler.model.Appointment;
-import Scheduler.model.ApptGroupCount;
-import Scheduler.model.Customer;
+import Scheduler.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -90,6 +88,33 @@ public class CustomerApptListController implements Initializable{
     private ObservableList<ApptGroupCount> apptsGroupCount;
 
     @FXML
+    private TableView<Appointment> repApptTableView;
+    @FXML
+    private TableColumn<Appointment, String> repId;
+    @FXML
+    private TableColumn<Appointment, String> repTitle;
+    @FXML
+    private TableColumn<Appointment, String> repDescription;
+    @FXML
+    private TableColumn<Appointment, String> repLocation;
+    @FXML
+    private TableColumn<Appointment, String> repApptType;
+    @FXML
+    private TableColumn<Appointment, String> repStart;
+    @FXML
+    private TableColumn<Appointment, String> repEnd;
+    @FXML
+    private TableColumn<Appointment, String> repCustID;
+    @FXML
+    private ComboBox<String> reportSelectCB;
+    @FXML
+    private Label selectContactLbl;
+    @FXML
+    private ComboBox<Contact> reportContactCB;
+    private ObservableList<Contact> contacts;
+
+
+    @FXML
     private TabPane tabPane;
     @FXML
     private ToggleGroup displayBy;
@@ -107,7 +132,6 @@ public class CustomerApptListController implements Initializable{
     private Calendar weekRange;
     private LocalDate firstDay;
     private LocalDate lastDay;
-    private boolean initialLogin;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -169,13 +193,29 @@ public class CustomerApptListController implements Initializable{
                 });
                 return row;
             });
+            //Report Selector
+            ObservableList<String> reportOption = FXCollections.observableArrayList();
+            reportOption.addAll("Appt by Month","Appt by Contact");
+            reportSelectCB.setItems(reportOption);
 
-            //Report Table setup
+            //Report Month Type Table setup
             apptsGroupCount = DBService.apptGroupCount(conn);
             reportTableView.setItems(apptsGroupCount);
             repMonth.setCellValueFactory(new PropertyValueFactory<ApptGroupCount, String>("Month"));
             repType.setCellValueFactory(new PropertyValueFactory<ApptGroupCount, String>("Type"));
             repCount.setCellValueFactory(new PropertyValueFactory<ApptGroupCount, String>("Count"));
+
+            //Report Contact Appointment Table Setup
+            repId.setCellValueFactory(new PropertyValueFactory<Appointment, String>("id"));
+            repTitle.setCellValueFactory(new PropertyValueFactory<Appointment, String>("title"));
+            repDescription.setCellValueFactory(new PropertyValueFactory<Appointment, String>("description"));
+            repLocation.setCellValueFactory(new PropertyValueFactory<Appointment, String>("location"));
+            repApptType.setCellValueFactory(new PropertyValueFactory<Appointment, String>("type"));
+            repStart.setCellValueFactory(new PropertyValueFactory<Appointment, String>("start"));
+            repEnd.setCellValueFactory(new PropertyValueFactory<Appointment, String>("end"));
+            repCustID.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerName"));
+            contacts = DBService.getAllContacts(conn);
+            reportContactCB.setItems(contacts);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -350,5 +390,34 @@ public class CustomerApptListController implements Initializable{
             alert.showAndWait();
         }
 
+    }
+    @FXML
+    private void reportSelected(){
+        var selectedReport = reportSelectCB.getValue();
+        switch (selectedReport){
+            case "Appt by Month" :
+                reportTableView.setVisible(true);
+                reportContactCB.setVisible(false);
+                repApptTableView.setVisible(false);
+                selectContactLbl.setVisible(false);
+                break;
+            case "Appt by Contact" :
+                reportTableView.setVisible(false);
+                reportContactCB.setVisible(true);
+                repApptTableView.setVisible(true);
+                selectContactLbl.setVisible(true);
+                break;
+        }
+    }
+    @FXML
+    private void contactSelected(){
+        var selectedContact = reportContactCB.getValue();
+        ObservableList<Appointment> contactAppts = FXCollections.observableArrayList();
+        for(Appointment appt: allAppts){
+            if(appt.getContactId() == selectedContact.getId()) {
+                contactAppts.add(appt);
+            }
+        }
+        repApptTableView.setItems(contactAppts);
     }
 }
