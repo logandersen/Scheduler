@@ -19,6 +19,10 @@ import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -30,6 +34,7 @@ import java.time.format.TextStyle;
 import java.time.temporal.WeekFields;
 import java.util.Calendar;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 import java.util.TimeZone;
 
 public class CustomerApptListController implements Initializable{
@@ -106,12 +111,22 @@ public class CustomerApptListController implements Initializable{
     @FXML
     private TableColumn<Appointment, String> repCustID;
     @FXML
-    private ComboBox<String> reportSelectCB;
+    private ComboBox<ReportOption> reportSelectCB;
     @FXML
     private Label selectContactLbl;
     @FXML
     private ComboBox<Contact> reportContactCB;
     private ObservableList<Contact> contacts;
+
+    @FXML
+    private TableView<LoginActivity> loginTableView;
+    @FXML
+    private TableColumn<LoginActivity, String> repUserName;
+    @FXML
+    private TableColumn<LoginActivity, String> repResult;
+    @FXML
+    private TableColumn<LoginActivity, String> repTimestamp;
+
 
 
     @FXML
@@ -194,9 +209,13 @@ public class CustomerApptListController implements Initializable{
                 return row;
             });
             //Report Selector
-            ObservableList<String> reportOption = FXCollections.observableArrayList();
-            reportOption.addAll("Appt by Month","Appt by Contact");
+            ObservableList<ReportOption> reportOption = FXCollections.observableArrayList();
+            var apptByMonth = new ReportOption(rs.getString("report.ApptByMonth"),1);
+            reportOption.add(apptByMonth);
+            reportOption.add(new ReportOption(rs.getString("report.ApptByContact"),2));
+            reportOption.add(new ReportOption(rs.getString("report.LoginActivity"),3));
             reportSelectCB.setItems(reportOption);
+            reportSelectCB.setValue(apptByMonth);
 
             //Report Month Type Table setup
             apptsGroupCount = DBService.apptGroupCount(conn);
@@ -217,7 +236,14 @@ public class CustomerApptListController implements Initializable{
             contacts = DBService.getAllContacts(conn);
             reportContactCB.setItems(contacts);
 
-        } catch (SQLException ex) {
+            //Report Login Activity setup
+            var loginActivities = buildLoginActivityList();
+            loginTableView.setItems(loginActivities);
+            repUserName.setCellValueFactory(new PropertyValueFactory<LoginActivity, String>("Username"));
+            repResult.setCellValueFactory(new PropertyValueFactory<LoginActivity, String>("Result"));
+            repTimestamp.setCellValueFactory(new PropertyValueFactory<LoginActivity, String>("Timestamp"));;
+
+        } catch (SQLException | IOException ex) {
             ex.printStackTrace();
         }
         displayBy = new ToggleGroup();
@@ -394,19 +420,27 @@ public class CustomerApptListController implements Initializable{
     @FXML
     private void reportSelected(){
         var selectedReport = reportSelectCB.getValue();
-        switch (selectedReport){
-            case "Appt by Month" :
+        switch (selectedReport.getValue()){
+            case 1 :
                 reportTableView.setVisible(true);
                 reportContactCB.setVisible(false);
                 repApptTableView.setVisible(false);
                 selectContactLbl.setVisible(false);
+                loginTableView.setVisible(false);
                 break;
-            case "Appt by Contact" :
+            case 2 :
                 reportTableView.setVisible(false);
                 reportContactCB.setVisible(true);
                 repApptTableView.setVisible(true);
                 selectContactLbl.setVisible(true);
+                loginTableView.setVisible(false);
                 break;
+            case 3 :
+                reportTableView.setVisible(false);
+                reportContactCB.setVisible(false);
+                repApptTableView.setVisible(false);
+                selectContactLbl.setVisible(false);
+                loginTableView.setVisible(true);
         }
     }
     @FXML
@@ -419,5 +453,16 @@ public class CustomerApptListController implements Initializable{
             }
         }
         repApptTableView.setItems(contactAppts);
+    }
+    private ObservableList<LoginActivity> buildLoginActivityList() throws IOException {
+        File file = new File("login_activity.txt");
+        Scanner scan = new Scanner(file);
+        ObservableList<LoginActivity> activities = FXCollections.observableArrayList();
+        while(scan.hasNextLine()){
+            var activity = new LoginActivity(scan.nextLine());
+            activities.add(activity);
+        }
+        scan.close();
+        return activities;
     }
 }

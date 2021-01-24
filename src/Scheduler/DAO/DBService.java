@@ -340,7 +340,7 @@ public class DBService {
     public static ObservableList<Appointment> apptWithinFifteen(Connection conn) throws SQLException {
         String qry = "SELECT appointments.*,Customer_Name FROM appointments " +
                 "LEFT JOIN customers ON customers.Customer_ID=appointments.Customer_ID " +
-                "WHERE TIMEDIFF(Start,?) <= TIME('00:15:00') AND TIMEDIFF(Start,?) >= TIME('-00:15:00') AND User_ID = ?;";
+                "WHERE TIMEDIFF(Start,?) <= TIME('00:00:00') AND TIMEDIFF(Start,?) >= TIME('-00:15:00') AND User_ID = ?;";
         PreparedStatement statement = conn.prepareStatement(qry);
         var nowLocal = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         var dateTimeString = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

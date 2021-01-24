@@ -13,10 +13,13 @@ import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -42,6 +45,7 @@ public class LoginController implements Initializable{
         var username = Username.getText();
         var password= Password.getText();
         var authenticated = DBService.authenticate(conn,username,password);
+        recordLoginAttempt(username,authenticated);
         if(authenticated){
             System.out.println("Authenticated");
             FXMLLoader custListLoader = new FXMLLoader();
@@ -73,5 +77,13 @@ public class LoginController implements Initializable{
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+    private void recordLoginAttempt(String username, boolean authed) throws IOException {
+        String fileName = "login_activity.txt";
+        FileWriter fw = new FileWriter(fileName,true);
+        PrintWriter pw = new PrintWriter(fw);
+        var result = authed?"Success":"Fail";
+        pw.println("Username: " + username +", Auth Result: " + result + ", Timestamp: " + Instant.now().toString());
+        pw.close();
     }
 }

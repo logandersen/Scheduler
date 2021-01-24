@@ -1,0 +1,7 @@
+Username: testing, Auth Result: Fail, Timestamp: 2021-01-23T22:40:03.452473800Z
+Username: testagain, Auth Result: Fail, Timestamp: 2021-01-23T22:41:05.068773300Z
+Username: test, Auth Result: Success, Timestamp: 2021-01-23T22:41:11.325094100Z
+Username: test, Auth Result: Success, Timestamp: 2021-01-23T23:59:03.851396100Z
+Username: test, Auth Result: Success, Timestamp: 2021-01-24T00:00:01.745522800Z
+Username: test, Auth Result: Success, Timestamp: 2021-01-24T00:00:22.986177100Z
+Username: test, Auth Result: Success, Timestamp: 2021-01-24T00:02:47.435916600Z
