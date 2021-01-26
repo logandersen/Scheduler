@@ -25,7 +25,7 @@ import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
+/** Controller used for the customer FXML edit and new form */
 public class CustomerController implements Initializable{
 
     @FXML
@@ -60,6 +60,7 @@ public class CustomerController implements Initializable{
     private ObservableList<Division> divisions;
     private ObservableList<Country> countries;
 
+    /** Initialize customer form by loading the country and division combo boxes */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.conn = LoginController.getConn();
@@ -74,9 +75,11 @@ public class CustomerController implements Initializable{
             throwables.printStackTrace();
         }
     }
+    /** Set page type for form as new or edit */
     public void setPageType(String pageType){
         this.pageType = pageType;
     }
+    /** Populate the customer input fields with the selected customer */
     public void setSelectedCustomer(Customer selectedCustomer) {
         customer = selectedCustomer;
         Id.setText(String.valueOf(selectedCustomer.getId()));
@@ -93,6 +96,7 @@ public class CustomerController implements Initializable{
         countrySelected();
 
     }
+    /** Takes the divId and selects the division option in the combo box */
     private Division selectDivision(int divId){
         for(Division division: divisions){
             if(division.id == divId){
@@ -101,6 +105,7 @@ public class CustomerController implements Initializable{
         }
         return  null;
     }
+    /** Takes the countryId and selects the country option in the combo box */
     private Country selectCountry(int countryId){
         for(Country country: countries){
             if(country.getId() == countryId){
@@ -109,7 +114,7 @@ public class CustomerController implements Initializable{
         }
         return  null;
     }
-
+    /** Filters the division combo box based on the selected country */
     @FXML
     private void countrySelected(){
         var selectedCountry = CountryCB.getValue();
@@ -130,11 +135,12 @@ public class CustomerController implements Initializable{
         }
 
     }
-
+    /** Switches to the customer list in the main form */
     @FXML
     private void cancel(ActionEvent event) throws IOException {
         loadCustomerList(event);
     }
+    /** Deletes the customer record after confirming and validating there are no associated appointments */
     @FXML
     private void delete(ActionEvent event) throws Exception{
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -155,7 +161,7 @@ public class CustomerController implements Initializable{
             failAlert.show();
         }
     }
-
+    /** Action called by the save button to update or save a new customer record */
     @FXML
     private void upsert(ActionEvent event) throws  Exception{
         if(pageType == "Edit"){
@@ -165,6 +171,7 @@ public class CustomerController implements Initializable{
             saveNew(event);
         }
     }
+    /** Takes user input fields and updates the customer record */
     private void update(ActionEvent event) throws Exception{
         var updateCust = new Customer();
         updateCust.setCustomerName(Name.getText());
@@ -177,6 +184,7 @@ public class CustomerController implements Initializable{
         DBService.updateCustomer(conn,updateCust);
         loadCustomerList(event);
     }
+    /** Takes the user input fields and creates a new customer record */
     private void saveNew(ActionEvent event) throws Exception{
         var userName = DBService.getUserName();
         var newCust = new Customer();
@@ -190,7 +198,7 @@ public class CustomerController implements Initializable{
         DBService.insertCustomer(conn,newCust);
         loadCustomerList(event);
     }
-
+    /** Switches to the main for with the customer list*/
     private void loadCustomerList(ActionEvent event) throws IOException {
         FXMLLoader custListLoader = new FXMLLoader();
         custListLoader.setLocation(getClass().getResource("../view/CustomerApptList.fxml"));

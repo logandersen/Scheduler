@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/** Controller used for the Appointment FXML new and edit form*/
 public class AppointmentController implements Initializable{
     @FXML
     private TextField Id;
@@ -69,6 +70,7 @@ public class AppointmentController implements Initializable{
     private ObservableList<TimeOption> timeOptions;
 
 
+    /** Initialized the appointment controller by populating the contact user and customer combo boxes*/
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         conn = LoginController.getConn();
@@ -88,9 +90,11 @@ public class AppointmentController implements Initializable{
             throwables.printStackTrace();
         }
     }
+    /** Sets the page type form as edit or new */
     public void setPageType(String pageType){
         this.pageType = pageType;
     }
+    /** Populates all appointment fields from selected appointment */
     public void setSelectedAppointment(Appointment selectedAppointment) {
         appointment = selectedAppointment;
         Id.setText(String.valueOf(selectedAppointment.getId()));
@@ -120,6 +124,8 @@ public class AppointmentController implements Initializable{
                 )
         );
     }
+
+    /** Takes the time string and selects the time combo box option */
     private TimeOption selectTimeOption(String timeValue){
         for(TimeOption timeOption: timeOptions){
             var optionValue = timeOption.getTimeValue();
@@ -129,6 +135,8 @@ public class AppointmentController implements Initializable{
         }
         return  null;
     }
+
+    /** Takes the contactId and selects the contact combo box option*/
     private Contact selectContact(int contactId){
         for(Contact contact: contacts){
             if(contact.getId() == contactId){
@@ -137,6 +145,7 @@ public class AppointmentController implements Initializable{
         }
         return  null;
     }
+    /** Takes the  userId and selects the user combo box option*/
     private User selectUser(int userId){
         for(User user: users){
             if(user.getId() == userId){
@@ -145,6 +154,7 @@ public class AppointmentController implements Initializable{
         }
         return  null;
     }
+    /** Takes the customerId and selects the user combo box option */
     private Customer selectCustomer(int customerId){
         for(Customer customer: customers){
             if(customer.getId() == customerId){
@@ -153,11 +163,12 @@ public class AppointmentController implements Initializable{
         }
         return null;
     }
-
+    /** Action for the cancel button that calls the function to take the user back to the appointment list */
     @FXML
     private void cancel(ActionEvent event) throws IOException {
         loadAppointmentList(event);
     }
+    /** Deletes the user record after confirming deletion */
     @FXML
     private void delete(ActionEvent event) throws Exception{
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -179,6 +190,7 @@ public class AppointmentController implements Initializable{
         }
     }
 
+    /** Action called by the save button to save or update the appointment record */
     @FXML
     private void upsert(ActionEvent event) throws  Exception{
         if(pageType == "Edit"){
@@ -188,6 +200,7 @@ public class AppointmentController implements Initializable{
             saveNew(event);
         }
     }
+    /** Takes user input fields and updates the appointment record */
     private void update(ActionEvent event) throws Exception {
         var userName = DBService.getUserName();
         var appt = new Appointment();
@@ -211,6 +224,7 @@ public class AppointmentController implements Initializable{
         DBService.updateAppointment(conn,appt);
         loadAppointmentList(event);
     }
+    /** Takes user input and saves a new appointment record */
     private void saveNew(ActionEvent event) throws Exception {
         var userName = DBService.getUserName();
         var appt = new Appointment();
@@ -234,6 +248,8 @@ public class AppointmentController implements Initializable{
         DBService.insertAppointment(conn,appt);
         loadAppointmentList(event);
     }
+
+    /** Checks appointments for business hours and overlapping */
     private boolean validateAppointmentTimes(ZonedDateTime start, ZonedDateTime end, Integer custID, Integer apptId) throws SQLException {
         var startEst = start.withZoneSameInstant(ZoneId.of("America/New_York"));
         var startTimeEst = startEst.toLocalTime();
@@ -266,6 +282,7 @@ public class AppointmentController implements Initializable{
         }
         return true;
     }
+    /** Switches from the appointment form to the appointment list */
     private void loadAppointmentList(ActionEvent event) throws IOException {
         FXMLLoader custListLoader = new FXMLLoader();
         custListLoader.setLocation(getClass().getResource("../view/CustomerApptList.fxml"));
@@ -278,6 +295,8 @@ public class AppointmentController implements Initializable{
         appStage.setScene(partScene);
         appStage.show();
     }
+
+    /** Populates Time combo box with half hour increments */
     private ObservableList<TimeOption> getTimeOptions(){
         ObservableList<TimeOption> timeOptions = FXCollections.observableArrayList();
         timeOptions.addAll(

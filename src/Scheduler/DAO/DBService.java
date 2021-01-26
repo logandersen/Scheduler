@@ -7,12 +7,12 @@ import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
-
+/** Class to provide all the service calls to the MySQL database */
 public class DBService {
 
     private static String Username;
     private static int UserID;
-
+    /** Takes the username and password and returns true or false for authentication */
     public static boolean authenticate(Connection conn, String username, String password) throws SQLException{
         String qry = "SELECT * FROM users WHERE User_Name = ? AND BINARY Password = ?";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -28,9 +28,11 @@ public class DBService {
         }
         return false;
     }
+    /** Gets the username property from the class  */
     public static String getUserName(){
         return Username;
     }
+    /** SQL call to return all users from the database */
     public static ObservableList<User> getAllUsers(Connection conn) throws SQLException{
         String qry = "SELECT * FROM users";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -46,6 +48,7 @@ public class DBService {
         }
         return users;
     }
+    /** SQL call to return all customers from the database */
     public static ObservableList<Customer> getAllCustomers(Connection conn) throws SQLException {
         String qry = "SELECT * FROM customers";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -82,7 +85,7 @@ public class DBService {
         }
         return customers;
     }
-
+    /** SQL call to update the specified customer in the database */
     public static void updateCustomer(Connection conn, Customer customer) throws SQLException {
         String qry = "UPDATE customers SET Customer_Name=?,Address=?,Phone=?,Postal_Code=?,Last_Update=?,Last_Updated_By=?,Division_ID=? WHERE Customer_ID =?;";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -98,6 +101,7 @@ public class DBService {
 
         statement.execute();
     }
+    /** SQL call to create a new customer in the database */
     public static void insertCustomer(Connection conn, Customer customer) throws SQLException {
         String qry = "INSERT INTO customers (Customer_Name,Address,Phone,Postal_Code,Create_Date,Created_By,Last_Update,Last_Updated_By,Division_ID) " +
                 "VALUES(?,?,?,?,?,?,?,?,?)";
@@ -115,6 +119,7 @@ public class DBService {
 
         statement.execute();
 }
+    /** SQL call to delete the specified customer from the database */
     public static boolean deleteCustomer(Connection conn, Customer customer) throws SQLException{
         if(foundAssociatedAppointments(conn,customer.getId())){
             return false;
@@ -128,7 +133,7 @@ public class DBService {
         };
         return false;
     }
-
+    /** SQL call to return division by ID from the database */
     private static Division getDivision(Connection conn, int id) throws SQLException {
         String qry = "SELECT * FROM first_level_divisions WHERE Division_ID = ?";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -141,6 +146,7 @@ public class DBService {
         division.countryID = rs.getInt("COUNTRY_ID");
         return division;
     };
+    /** SQL call to return all divisions from the database */
     public static ObservableList<Division> getAllDivisions(Connection conn) throws SQLException{
         String qry = "SELECT * FROM first_level_divisions";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -156,7 +162,7 @@ public class DBService {
         }
         return Divisions;
     }
-
+    /** SQL call to return country by id from the database */
     private static Country getCountry(Connection conn, int id) throws SQLException {
         String qry = "SELECT * FROM countries WHERE Country_ID = ?";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -168,6 +174,7 @@ public class DBService {
         country.setName(rs.getString("Country"));
         return country;
     };
+    /** SQL call to return all countries from the database */
     public static ObservableList<Country> getAllCountries(Connection conn) throws SQLException{
         String qry = "SELECT * FROM countries";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -182,7 +189,7 @@ public class DBService {
         }
         return countries;
     }
-
+    /** SQL call to return all appointments from the database */
     public static ObservableList<Appointment> getAllAppointments(Connection conn) throws SQLException {
         String qry = "SELECT appointments.*,Contact_Name,User_Name,Customer_Name " +
                 "FROM appointments " +
@@ -229,6 +236,7 @@ public class DBService {
         }
         return appointments;
     }
+    /** SQL call to check for appointments associated to the specified customer */
     public static boolean foundAssociatedAppointments(Connection conn, Integer custID) throws SQLException {
         String qry = "SELECT * FROM appointments WHERE Customer_ID =" + custID;
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -236,6 +244,7 @@ public class DBService {
         var rs = statement.getResultSet();
         return rs.next();
     }
+    /** SQL call to return all  from the database */
     public static boolean apptSameCustomerSameTime(Connection conn, String start, String end,Integer custID,Integer apptId) throws SQLException{
         String qry = "SELECT * FROM appointments " +
             "WHERE Customer_ID=? AND Appointment_ID<>? AND (NOT(End <? OR Start >?) AND Start != ? AND End != ?)";
@@ -250,6 +259,7 @@ public class DBService {
         var rs = statement.getResultSet();
         return rs.next();
     }
+    /** SQL call to update the specified appointment in the database */
     public static void updateAppointment(Connection conn, Appointment appointment) throws SQLException {
         String qry = "UPDATE appointments SET Title=?,Description=?," +
                 "Location=?,Type=?,Start=?,End=?,Last_Update=?," +
@@ -279,6 +289,7 @@ public class DBService {
         statement.setInt(12,appointment.getId());
         statement.execute();
     }
+    /** SQL call to create a new appointment in the database */
     public static void insertAppointment(Connection conn, Appointment appointment) throws SQLException {
         String qry = "INSERT INTO appointments (Title,Description,Location,Type,Start,End,Create_Date,Created_By,Last_Update,Last_Updated_By,Customer_ID,User_ID,Contact_ID) " +
                 "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -309,6 +320,7 @@ public class DBService {
         statement.setInt(13,appointment.getContactId());
         statement.execute();
     }
+    /** SQL call to delete the specified appointment in the database */
     public static boolean deleteAppointment(Connection conn, Appointment appointment) throws SQLException{
         String qry = "DELETE FROM appointments WHERE appointment_ID =?";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -319,7 +331,7 @@ public class DBService {
         };
         return false;
     }
-
+    /** SQL call to return all contacts from the database */
     public static ObservableList<Contact> getAllContacts(Connection conn) throws SQLException{
         String qry = "SELECT * FROM contacts";
         PreparedStatement statement = conn.prepareStatement(qry);
@@ -336,7 +348,7 @@ public class DBService {
         }
         return contacts;
     }
-
+    /** SQL call to return all appointments for the user within 15 minutes of logging in */
     public static ObservableList<Appointment> apptWithinFifteen(Connection conn) throws SQLException {
         String qry = "SELECT appointments.*,Customer_Name FROM appointments " +
                 "LEFT JOIN customers ON customers.Customer_ID=appointments.Customer_ID " +
@@ -363,6 +375,7 @@ public class DBService {
         }
         return appointments;
     }
+    /** SQL call to return appointments grouped by month and type with a count */
     public static ObservableList<ApptGroupCount> apptGroupCount(Connection conn) throws SQLException {
         String qry = "SELECT date_format(Start, '%m-%Y') AS Month,Type, count(Appointment_ID) AS Count " +
             "FROM WJ05WDT.appointments " +

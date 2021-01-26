@@ -23,7 +23,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
+/** Controller used for the customer FXML edit and new form */
 public class LoginController implements Initializable{
 
     @FXML
@@ -39,6 +39,7 @@ public class LoginController implements Initializable{
     private Locale locale;
     private ResourceBundle rs;
 
+    /** Action called by the login button to validate the username and password to get into the app */
     @FXML
     private void login(ActionEvent event) throws SQLException, IOException {
         ErrorText.setVisible(false);
@@ -64,20 +65,23 @@ public class LoginController implements Initializable{
         }
     }
 
+    /** set the resource button and system default zone id  */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.rs = resourceBundle;
         Zone.setText(ZoneId.systemDefault().toString());
     }
-
+    /** Sets the database connection to use in the form */
     public void setConn(Connection conn) {
         this.conn = conn;
     }
+    /** Gets the database connection to use in the form */
     public static Connection getConn(){return conn;}
-
+    /** Sets the locale for the form */
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
+    /** Records the login attempt in the login activity txt file */
     private void recordLoginAttempt(String username, boolean authed) throws IOException {
         String fileName = "login_activity.txt";
         FileWriter fw = new FileWriter(fileName,true);

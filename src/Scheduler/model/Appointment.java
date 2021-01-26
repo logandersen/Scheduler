@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+
 public class Appointment {
     private int id;
     private String title;

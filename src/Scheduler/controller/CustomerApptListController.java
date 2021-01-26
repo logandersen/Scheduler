@@ -36,7 +36,7 @@ import java.util.Calendar;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.TimeZone;
-
+/** Controller used for the CustomerApptList FXML form*/
 public class CustomerApptListController implements Initializable{
 
     //Customer
@@ -147,7 +147,9 @@ public class CustomerApptListController implements Initializable{
     private Calendar weekRange;
     private LocalDate firstDay;
     private LocalDate lastDay;
-
+    /** Initialize main form by loading customer, appointment, and report views
+     * <p></p>
+     * Customer and Appointment tableviews use lambda functions to set the double click events on each of the rows*/
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.rs = resourceBundle;
@@ -193,7 +195,7 @@ public class CustomerApptListController implements Initializable{
             end.setCellValueFactory(new PropertyValueFactory<Appointment, String>("end"));
             apptCustomerName.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerName"));
 
-            //Customer Double Click
+            //Appointment Double Click
             appointmentTableView.setRowFactory(tv-> {
                 var row = new TableRow<Appointment>();
                 row.setOnMouseClicked(event -> {
@@ -252,6 +254,7 @@ public class CustomerApptListController implements Initializable{
         displayBy.selectToggle(monthToggle);
         setCurrentMonth();
     }
+    /** Load customer form with selected customer data populated */
     private void editCustomer(Customer cust, MouseEvent event) throws Exception{
         FXMLLoader custLoader = new FXMLLoader();
         custLoader.setLocation(getClass().getResource("../view/Customer.fxml"));
@@ -266,7 +269,7 @@ public class CustomerApptListController implements Initializable{
         appStage.setScene(partScene);
         appStage.show();
     }
-
+    /** Load appointment form with selected appointment data populated */
     private void editAppt(Appointment appt, MouseEvent event) throws Exception{
         FXMLLoader apptLoader = new FXMLLoader();
         apptLoader.setLocation(getClass().getResource("../view/Appointment.fxml"));
@@ -281,7 +284,7 @@ public class CustomerApptListController implements Initializable{
         appStage.setScene(partScene);
         appStage.show();
     }
-
+    /** Loads the customer form to create a new customer */
     @FXML
     private void newCustomer(ActionEvent event) throws Exception {
         FXMLLoader custLoader = new FXMLLoader();
@@ -295,6 +298,7 @@ public class CustomerApptListController implements Initializable{
         appStage.setScene(partScene);
         appStage.show();
     }
+    /** Loads the appointment form to create a new appointment */
     @FXML
     private void newAppointment(ActionEvent event) throws Exception {
         FXMLLoader apptLoader = new FXMLLoader();
@@ -308,10 +312,13 @@ public class CustomerApptListController implements Initializable{
         appStage.setScene(partScene);
         appStage.show();
     }
+
+    /** Sets the appointment tab to the active tab */
     @FXML
     public void setApptTab(){
         tabPane.getSelectionModel().select(1);
     }
+    /** Sets the current month for the date range selector */
     @FXML
     private void setCurrentMonth(){
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault(),rs.getLocale());
@@ -319,6 +326,7 @@ public class CustomerApptListController implements Initializable{
         dateRange = LocalDate.ofInstant(calendar.toInstant(), ZoneId.systemDefault());
         setMonthFilter();
     }
+    /** Filters appointment list by the selected month */
     private void setMonthFilter(){
         var newMonth = dateRange.getMonth();
         dateSelectionText.setText(newMonth.getDisplayName(TextStyle.FULL,rs.getLocale()) + " " + dateRange.getYear());
@@ -333,6 +341,7 @@ public class CustomerApptListController implements Initializable{
         }
         appointmentTableView.setItems(filteredAppts);
     }
+    /** Sets the current week for the date range selector */
     @FXML
     private void setCurrentWeek(){
         var today = LocalDate.now();
@@ -341,6 +350,7 @@ public class CustomerApptListController implements Initializable{
         setWeekFilter();
 
     }
+    /** Filters appointment list by the selected week */
     private void setWeekFilter(){
         var calendar = weekRange;
         calendar.set(Calendar.DAY_OF_WEEK,1);
@@ -361,6 +371,7 @@ public class CustomerApptListController implements Initializable{
         }
         appointmentTableView.setItems(filteredAppts);
     }
+    /** Sets the date range to the previous week or month */
     @FXML
     private void prevDate(ActionEvent event){
         var selectedToggle = (ToggleButton)displayBy.getSelectedToggle();
@@ -373,6 +384,7 @@ public class CustomerApptListController implements Initializable{
             setWeekFilter();
         }
     }
+    /** Sets the date range to the previous week or month */
     @FXML
     private void nextDate(ActionEvent event){
         var selectedToggle = (ToggleButton)displayBy.getSelectedToggle();
@@ -385,10 +397,8 @@ public class CustomerApptListController implements Initializable{
             setWeekFilter();
         }
     }
-
+    /** Alerts user of upcoming appointments upon login */
     public void appointmentAlert() throws SQLException {
-
-
         var appts = DBService.apptWithinFifteen(conn);
         var alertString = new StringBuilder();
         if(appts.size() > 0) {
@@ -417,6 +427,7 @@ public class CustomerApptListController implements Initializable{
         }
 
     }
+    /** Toggles visibility of report views based on selected report */
     @FXML
     private void reportSelected(){
         var selectedReport = reportSelectCB.getValue();
@@ -443,6 +454,7 @@ public class CustomerApptListController implements Initializable{
                 loginTableView.setVisible(true);
         }
     }
+    /** Filters the appointment report based on the selected contact */
     @FXML
     private void contactSelected(){
         var selectedContact = reportContactCB.getValue();
@@ -454,6 +466,7 @@ public class CustomerApptListController implements Initializable{
         }
         repApptTableView.setItems(contactAppts);
     }
+    /** Populates the Login Activity report based on each line of the login activity log */
     private ObservableList<LoginActivity> buildLoginActivityList() throws IOException {
         File file = new File("login_activity.txt");
         Scanner scan = new Scanner(file);
