@@ -6,6 +6,8 @@ import javafx.collections.ObservableList;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Class to provide all the service calls to the MySQL database */
 public class DBService {
@@ -119,11 +121,9 @@ public class DBService {
 
         statement.execute();
 }
-    /** SQL call to delete the specified customer from the database */
+    /** SQL call to delete the specified customer and all associated appointments from the database*/
     public static boolean deleteCustomer(Connection conn, Customer customer) throws SQLException{
-        if(foundAssociatedAppointments(conn,customer.getId())){
-            return false;
-        }
+        DeleteAssociatedAppointments(conn, customer.getId());
         String qry = "DELETE FROM customers WHERE Customer_ID =?";
         PreparedStatement statement = conn.prepareStatement(qry);
         statement.setInt(1,customer.getId());
@@ -237,12 +237,10 @@ public class DBService {
         return appointments;
     }
     /** SQL call to check for appointments associated to the specified customer */
-    public static boolean foundAssociatedAppointments(Connection conn, Integer custID) throws SQLException {
-        String qry = "SELECT * FROM appointments WHERE Customer_ID =" + custID;
+    public static void DeleteAssociatedAppointments(Connection conn, Integer custID) throws SQLException {
+        String qry = "DELETE FROM appointments WHERE Customer_ID =" + custID;
         PreparedStatement statement = conn.prepareStatement(qry);
         statement.execute();
-        var rs = statement.getResultSet();
-        return rs.next();
     }
     /** SQL call to return all  from the database */
     public static boolean apptSameCustomerSameTime(Connection conn, String start, String end,Integer custID,Integer apptId) throws SQLException{
