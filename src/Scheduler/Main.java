@@ -19,8 +19,10 @@ import java.time.format.*;
 import java.util.Calendar.*;
 import java.util.TimeZone;
 
+/** Main application class for the scheduler */
 public class Main extends Application {
 
+    /** Starts the program by getting the local resource bundle and opening the login form */
     @Override
     public void start(Stage primaryStage) throws Exception{
         Locale defaultLocale = Locale.getDefault();
@@ -41,6 +43,7 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(loginParent));
         primaryStage.show();
     }
+    /** Launches the application and closes the connection after the application closes */
     public static void main(String[] args) throws SQLException {
         launch(args);
         DBConnector.closeConnection();

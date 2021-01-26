@@ -397,7 +397,9 @@ public class CustomerApptListController implements Initializable{
             setWeekFilter();
         }
     }
-    /** Alerts user of upcoming appointments upon login */
+    /** Alerts user of upcoming appointments upon login
+     * <p></p>
+     * Lambda expression for each appointment returned. Builds the appointment notification string*/
     public void appointmentAlert() throws SQLException {
         var appts = DBService.apptWithinFifteen(conn);
         var alertString = new StringBuilder();
