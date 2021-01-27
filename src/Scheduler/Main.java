@@ -10,14 +10,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.sql.*;
-import java.time.*;
-import java.time.temporal.WeekFields;
-import java.util.Calendar;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.time.format.*;
-import java.util.Calendar.*;
-import java.util.TimeZone;
 
 /** Main application class for the scheduler */
 public class Main extends Application {
