@@ -119,14 +119,11 @@ public class CustomerApptListController implements Initializable{
     private ObservableList<Contact> contacts;
 
     @FXML
-    private TableView<LoginActivity> loginTableView;
+    private TableView<CustByDiv> custDivTableView;
     @FXML
-    private TableColumn<LoginActivity, String> repUserName;
+    private TableColumn<CustByDiv,String> repDiv;
     @FXML
-    private TableColumn<LoginActivity, String> repResult;
-    @FXML
-    private TableColumn<LoginActivity, String> repTimestamp;
-
+    private TableColumn<CustByDiv,String> repCustomerCount;
 
 
     @FXML
@@ -215,7 +212,7 @@ public class CustomerApptListController implements Initializable{
             var apptByMonth = new ReportOption(rs.getString("report.ApptByMonth"),1);
             reportOption.add(apptByMonth);
             reportOption.add(new ReportOption(rs.getString("report.ApptByContact"),2));
-            reportOption.add(new ReportOption(rs.getString("report.LoginActivity"),3));
+            reportOption.add(new ReportOption(rs.getString("report.CustomerByDivision"),3));
             reportSelectCB.setItems(reportOption);
             reportSelectCB.setValue(apptByMonth);
 
@@ -238,14 +235,12 @@ public class CustomerApptListController implements Initializable{
             contacts = DBService.getAllContacts(conn);
             reportContactCB.setItems(contacts);
 
-            //Report Login Activity setup
-            var loginActivities = buildLoginActivityList();
-            loginTableView.setItems(loginActivities);
-            repUserName.setCellValueFactory(new PropertyValueFactory<LoginActivity, String>("Username"));
-            repResult.setCellValueFactory(new PropertyValueFactory<LoginActivity, String>("Result"));
-            repTimestamp.setCellValueFactory(new PropertyValueFactory<LoginActivity, String>("Timestamp"));;
+            //Report Customer by Division Table setup
+            custDivTableView.setItems(DBService.custDivCount(conn));
+            repDiv.setCellValueFactory(new PropertyValueFactory<CustByDiv, String>("division"));
+            repCustomerCount.setCellValueFactory(new PropertyValueFactory<CustByDiv, String>("count"));
 
-        } catch (SQLException | IOException ex) {
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
         displayBy = new ToggleGroup();
@@ -439,21 +434,21 @@ public class CustomerApptListController implements Initializable{
                 reportContactCB.setVisible(false);
                 repApptTableView.setVisible(false);
                 selectContactLbl.setVisible(false);
-                loginTableView.setVisible(false);
+                custDivTableView.setVisible(false);
                 break;
             case 2 :
                 reportTableView.setVisible(false);
                 reportContactCB.setVisible(true);
                 repApptTableView.setVisible(true);
                 selectContactLbl.setVisible(true);
-                loginTableView.setVisible(false);
+                custDivTableView.setVisible(false);
                 break;
             case 3 :
                 reportTableView.setVisible(false);
                 reportContactCB.setVisible(false);
                 repApptTableView.setVisible(false);
                 selectContactLbl.setVisible(false);
-                loginTableView.setVisible(true);
+                custDivTableView.setVisible(true);
         }
     }
     /** Filters the appointment report based on the selected contact */
@@ -467,17 +462,5 @@ public class CustomerApptListController implements Initializable{
             }
         }
         repApptTableView.setItems(contactAppts);
-    }
-    /** Populates the Login Activity report based on each line of the login activity log */
-    private ObservableList<LoginActivity> buildLoginActivityList() throws IOException {
-        File file = new File("login_activity.txt");
-        Scanner scan = new Scanner(file);
-        ObservableList<LoginActivity> activities = FXCollections.observableArrayList();
-        while(scan.hasNextLine()){
-            var activity = new LoginActivity(scan.nextLine());
-            activities.add(activity);
-        }
-        scan.close();
-        return activities;
     }
 }

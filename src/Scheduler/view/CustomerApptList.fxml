@@ -8,8 +8,6 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
@@ -107,11 +105,10 @@
                               <TableColumn fx:id="repCustID" text="%apptList.custId" />
                            </columns>
                         </TableView>
-                         <TableView layoutX="36.0" layoutY="76.0" prefHeight="623.0" prefWidth="905.0" fx:id="loginTableView" visible="false">
+                         <TableView layoutX="36.0" layoutY="76.0" prefHeight="623.0" prefWidth="905.0" fx:id="custDivTableView" visible="false">
                              <columns>
-                                 <TableColumn fx:id="repUserName" prefWidth="100.0" text="%report.UserName" />
-                                 <TableColumn fx:id="repResult" prefWidth="100.0" text="%report.Result"/>
-                                 <TableColumn fx:id="repTimestamp" prefWidth="200.0" text="%report.Timestamp" />
+                                 <TableColumn fx:id="repDiv" prefWidth="100.0" text="%report.Div" />
+                                 <TableColumn fx:id="repCustomerCount" prefWidth="100.0" text="%report.CustomerCount"/>
                              </columns>
                          </TableView>
                      </children>

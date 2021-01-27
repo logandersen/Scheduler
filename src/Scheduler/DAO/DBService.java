@@ -391,4 +391,22 @@ public class DBService {
         }
         return apptGroupCounts;
     }
+    /** SQL call to return appointments grouped by customer with a count */
+    public static ObservableList<CustByDiv> custDivCount(Connection conn) throws SQLException {
+        String qry = "SELECT Division, Count(Customer_ID) as CustomerCount " +
+                "FROM customers " +
+                "left outer join first_level_divisions on customers.Division_ID = first_level_divisions.Division_ID " +
+                "group by Division";
+        PreparedStatement statement = conn.prepareStatement(qry);
+        statement.execute();
+        var rs = statement.getResultSet();
+        ObservableList<CustByDiv> custCounts = FXCollections.observableArrayList();
+        while(rs.next()){
+            var custByDiv = new CustByDiv();
+            custByDiv.setDivision(rs.getString("Division"));
+            custByDiv.setCount(rs.getInt("CustomerCount"));
+            custCounts.add(custByDiv);
+        }
+        return custCounts;
+    }
 }
