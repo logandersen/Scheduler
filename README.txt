@@ -37,6 +37,6 @@ Reports:
     -Appt by Contact
       -Select a contact in the contact dropdown
       -This report shows all appointments for a specific contact
-    -Login Activity
-      -This report shows all user login activity from the login_activity.txt file
+    -Customer By Division
+      -This report shows the count of customers in each division
  
