@@ -274,7 +274,7 @@ public class AppointmentController implements Initializable{
         var endInstant = end.toInstant();
         var endLocal = LocalDateTime.ofInstant(endInstant, ZoneOffset.UTC);
         var endString = endLocal.format(sqlDateTimeString);
-        if(DBService.apptSameCustomerSameTime(conn,startString,endString,custID,apptId)){
+        if(DBService.apptSameTime(conn,startString,endString,apptId)){
             Alert failAlert = new Alert(Alert.AlertType.ERROR);
             failAlert.setContentText(rs.getString("appt.Overlapping"));
             failAlert.show();

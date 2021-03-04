@@ -243,16 +243,17 @@ public class DBService {
         statement.execute();
     }
     /** SQL call to return all  from the database */
-    public static boolean apptSameCustomerSameTime(Connection conn, String start, String end,Integer custID,Integer apptId) throws SQLException{
+    public static boolean apptSameTime(Connection conn, String start, String end,Integer apptId) throws SQLException{
         String qry = "SELECT * FROM appointments " +
-            "WHERE Customer_ID=? AND Appointment_ID<>? AND (NOT(End <? OR Start >?) AND Start != ? AND End != ?)";
+            "WHERE Appointment_ID<>? AND ((NOT(End <? OR Start >?) AND Start != ? AND End != ?) OR Start <= ? AND End >= ?)";
         PreparedStatement statement = conn.prepareStatement(qry);
-        statement.setInt(1,custID);
-        statement.setInt(2,apptId);
-        statement.setString(3,start);
+        statement.setInt(1,apptId);
+        statement.setString(2,start);
+        statement.setString(3,end);
         statement.setString(4,end);
-        statement.setString(5,end);
+        statement.setString(5,start);
         statement.setString(6,start);
+        statement.setString(7,end);
         statement.execute();
         var rs = statement.getResultSet();
         return rs.next();
