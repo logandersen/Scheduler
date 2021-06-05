@@ -58,6 +58,8 @@ public class CustomerApptListController implements Initializable{
     private TableColumn<Customer, String> createdDate;
     @FXML
     private TableColumn<Customer, String> createdBy;
+    @FXML
+    private TextField searchTxt;
 
     //Appointment
     @FXML
@@ -144,6 +146,7 @@ public class CustomerApptListController implements Initializable{
     private Calendar weekRange;
     private LocalDate firstDay;
     private LocalDate lastDay;
+    private ObservableList<Customer> allCustomers;
     /** Initialize main form by loading customer, appointment, and report views
      * <p></p>
      * Customer and Appointment tableviews use lambda functions to set the double click events on each of the rows*/
@@ -153,7 +156,8 @@ public class CustomerApptListController implements Initializable{
         this.conn = LoginController.getConn();
         try {
             //Customer Table setup
-            customerTableView.setItems(DBService.getAllCustomers(conn));
+            allCustomers = DBService.getAllCustomers(conn);
+            customerTableView.setItems(allCustomers);
             customerName.setCellValueFactory(new PropertyValueFactory<Customer, String>("customerName"));
             address.setCellValueFactory(new PropertyValueFactory<Customer, String>("address"));
             postalCode.setCellValueFactory(new PropertyValueFactory<Customer, String>("postalCode"));
@@ -249,6 +253,25 @@ public class CustomerApptListController implements Initializable{
         displayBy.selectToggle(monthToggle);
         setCurrentMonth();
     }
+    @FXML
+    private void searchCustomers(ActionEvent event) throws SQLException {
+        String searchStr = searchTxt.getText();
+        if(searchStr.isEmpty()){
+            customerTableView.setItems(allCustomers);
+            return;
+        }
+        customerTableView.setItems(lookupCustomer(searchStr));
+    }
+    private ObservableList<Customer> lookupCustomer (String searchStr){
+        ObservableList<Customer> filteredCustomers = FXCollections.observableArrayList();
+        for(Customer cust: allCustomers){
+            if(cust.getCustomerName().toLowerCase().contains(searchStr.toLowerCase())){
+                filteredCustomers.add(cust);
+            }
+        }
+        return filteredCustomers;
+    }
+
     /** Load customer form with selected customer data populated */
     private void editCustomer(Customer cust, MouseEvent event) throws Exception{
         FXMLLoader custLoader = new FXMLLoader();
