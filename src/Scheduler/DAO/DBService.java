@@ -202,11 +202,21 @@ public class DBService {
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
 
         while(rs.next()){
-            var appt = new Appointment();
+            var type = rs.getString("Type");
+            Appointment appt;
+            if(type.equals("Phone Call")){
+                appt = new PhoneCall();
+                ((PhoneCall) appt).setPhoneNumber(rs.getString("Phone Number"));
+            }
+            else{
+                appt = new OnSiteMeeting();
+                ((OnSiteMeeting) appt).setLocation(rs.getString("Location"));
+            }
+            appt.setType(type);
             appt.setId(rs.getInt("Appointment_ID"));
             appt.setTitle(rs.getString("Title"));
             appt.setDescription(rs.getString("Description"));
-            appt.setLocation(rs.getString("Location"));
+
             appt.setType(rs.getString("Type"));
             var startTimestamp =rs.getTimestamp("Start");
             var startLocal = startTimestamp.toLocalDateTime();
@@ -262,11 +272,13 @@ public class DBService {
     public static void updateAppointment(Connection conn, Appointment appointment) throws SQLException {
         String qry = "UPDATE appointments SET Title=?,Description=?," +
                 "Location=?,Type=?,Start=?,End=?,Last_Update=?," +
-                "Last_Updated_By=?,Customer_ID=?,User_ID=?,Contact_ID=? WHERE Appointment_ID =?";
+                "Last_Updated_By=?,Customer_ID=?,User_ID=?,Contact_ID=?,Phone_Number=? WHERE Appointment_ID =?";
         PreparedStatement statement = conn.prepareStatement(qry);
         statement.setString(1,appointment.getTitle());
         statement.setString(2,appointment.getDescription());
-        statement.setString(3,appointment.getLocation());
+        if(appointment instanceof OnSiteMeeting) {
+            statement.setString(3, ((OnSiteMeeting) appointment).getLocation());
+        }
         statement.setString(4,appointment.getType());
         var timestampFormat =DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         var startZDT = appointment.getStartZDT();
@@ -285,17 +297,22 @@ public class DBService {
         statement.setInt(9,appointment.getCustomerId());
         statement.setInt(10,appointment.getUserId());
         statement.setInt(11,appointment.getContactId());
-        statement.setInt(12,appointment.getId());
+        if(appointment instanceof PhoneCall){
+            statement.setString(12,((PhoneCall) appointment).getPhoneNumber());
+        }
+        statement.setInt(13,appointment.getId());
         statement.execute();
     }
     /** SQL call to create a new appointment in the database */
     public static void insertAppointment(Connection conn, Appointment appointment) throws SQLException {
-        String qry = "INSERT INTO appointments (Title,Description,Location,Type,Start,End,Create_Date,Created_By,Last_Update,Last_Updated_By,Customer_ID,User_ID,Contact_ID) " +
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String qry = "INSERT INTO appointments (Title,Description,Location,Type,Start,End,Create_Date,Created_By,Last_Update,Last_Updated_By,Customer_ID,User_ID,Contact_ID,Phone_Number) " +
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         PreparedStatement statement = conn.prepareStatement(qry);
         statement.setString(1,appointment.getTitle());
         statement.setString(2,appointment.getDescription());
-        statement.setString(3,appointment.getLocation());
+        if(appointment instanceof OnSiteMeeting) {
+            statement.setString(3, ((OnSiteMeeting) appointment).getLocation());
+        }
         statement.setString(4,appointment.getType());
         var timestampFormat =DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         var startZDT = appointment.getStartZDT();
@@ -317,6 +334,9 @@ public class DBService {
         statement.setInt(11,appointment.getCustomerId());
         statement.setInt(12,appointment.getUserId());
         statement.setInt(13,appointment.getContactId());
+        if(appointment instanceof PhoneCall){
+            statement.setString(14,((PhoneCall) appointment).getPhoneNumber());
+        }
         statement.execute();
     }
     /** SQL call to delete the specified appointment in the database */

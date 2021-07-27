@@ -26,6 +26,8 @@
 
       <Label alignment="CENTER_RIGHT" layoutX="30.0" layoutY="207.0" prefHeight="17.0" prefWidth="90.0" text="%apptList.location" />
       <TextField fx:id="Location" layoutX="139.0" layoutY="203.0" prefHeight="25.0" prefWidth="227.0" />
+      <Label alignment="CENTER_RIGHT" layoutX="30.0" layoutY="207.0" prefHeight="17.0" prefWidth="90.0" text="%apptList.PhoneNumber" />
+      <TextField fx:id="PhoneNumber" layoutX="139.0" layoutY="203.0" prefHeight="25.0" prefWidth="227.0" />
 
       <Label alignment="CENTER_RIGHT" layoutX="30.0" layoutY="247.0" prefHeight="17.0" prefWidth="90.0" text="%apptList.contact" />
       <ComboBox fx:id="ContactCB" layoutX="139.0" layoutY="243.0" prefHeight="25.0" prefWidth="227.0" />

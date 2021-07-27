@@ -12,7 +12,6 @@ public class Appointment {
     private int id;
     private String title;
     private String description;
-    private String location;
     private String type;
     private ZonedDateTime start;
     private ZonedDateTime end;
@@ -41,10 +40,6 @@ public class Appointment {
     /** Get description string*/
     public String getDescription() {
         return description;
-    }
-    /** Get location string */
-    public String getLocation() {
-        return location;
     }
     /** Get type string */
     public String getType() {
@@ -125,10 +120,6 @@ public class Appointment {
     /** Set description string */
     public void setDescription(String description) {
         this.description = description;
-    }
-    /** Set location string */
-    public void setLocation(String location) {
-        this.location = location;
     }
     /** Set type string */
     public void setType(String type) {

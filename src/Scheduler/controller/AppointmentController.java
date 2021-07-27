@@ -35,6 +35,8 @@ public class AppointmentController implements Initializable{
     @FXML
     private TextField Location;
     @FXML
+    private TextField PhoneNumber;
+    @FXML
     private TextField Type;
     @FXML
     private Label CreatedOn;
@@ -96,11 +98,17 @@ public class AppointmentController implements Initializable{
     }
     /** Populates all appointment fields from selected appointment */
     public void setSelectedAppointment(Appointment selectedAppointment) {
+
         appointment = selectedAppointment;
         Id.setText(String.valueOf(selectedAppointment.getId()));
         Title.setText(selectedAppointment.getTitle());
         Description.setText(String.valueOf(selectedAppointment.getDescription()));
-        Location.setText(String.valueOf(selectedAppointment.getLocation()));
+        if(appointment instanceof OnSiteMeeting){
+            Location.setText(String.valueOf(((OnSiteMeeting)selectedAppointment).getLocation()));
+        }
+        if(appointment instanceof PhoneCall){
+            PhoneNumber.setText(String.valueOf(((PhoneCall)selectedAppointment).getPhoneNumber()));
+        }
         Type.setText(String.valueOf(selectedAppointment.getType()));
         CreatedOn.setText(selectedAppointment.getCreatedDate());
         CreatedBy.setText(String.valueOf(selectedAppointment.getCreatedBy()));
@@ -203,12 +211,21 @@ public class AppointmentController implements Initializable{
     /** Takes user input fields and updates the appointment record */
     private void update(ActionEvent event) throws Exception {
         var userName = DBService.getUserName();
-        var appt = new Appointment();
+        Appointment appt;
+        var type = Type.getText();
+        if(type.equals("On Site")){
+            appt = new OnSiteMeeting();
+            ((OnSiteMeeting)appt).setLocation(Location.getText());
+        }
+        else{
+            appt = new PhoneCall();
+            ((PhoneCall) appt).setPhoneNumber(PhoneNumber.getText());
+        }
         appt.setId(appointment.getId());
         appt.setTitle(Title.getText());
         appt.setDescription(Description.getText());
-        appt.setLocation(Location.getText());
-        appt.setType(Type.getText());
+
+        appt.setType(type);
         var timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
         var startTime = LocalTime.parse(StartTimeCB.getValue().getTimeValue(),timeFormat);
         appt.setStart(ZonedDateTime.of(StartDate.getValue(),startTime, ZoneId.systemDefault()));
@@ -227,10 +244,18 @@ public class AppointmentController implements Initializable{
     /** Takes user input and saves a new appointment record */
     private void saveNew(ActionEvent event) throws Exception {
         var userName = DBService.getUserName();
-        var appt = new Appointment();
+        Appointment appt;
+        var type = Type.getText();
+        if(type.equals("On Site")){
+            appt = new OnSiteMeeting();
+            ((OnSiteMeeting)appt).setLocation(Location.getText());
+        }
+        else{
+            appt = new PhoneCall();
+            ((PhoneCall) appt).setPhoneNumber(PhoneNumber.getText());
+        }
         appt.setTitle(Title.getText());
         appt.setDescription(Description.getText());
-        appt.setLocation(Location.getText());
         appt.setType(Type.getText());
         var timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
         var startTime = LocalTime.parse(StartTimeCB.getValue().getTimeValue(),timeFormat);

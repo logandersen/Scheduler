@@ -53,7 +53,6 @@
                                 <TableColumn fx:id="apptId" text="%apptList.apptId" />
                                 <TableColumn fx:id="title" text="%apptList.title" />
                                 <TableColumn fx:id="description" text="%apptList.desc" />
-                                <TableColumn fx:id="location" text="%apptList.location" />
                                 <TableColumn fx:id="contact" text="%apptList.contact" />
                                 <TableColumn fx:id="type" text="%apptList.type" />
                                 <TableColumn fx:id="start" prefWidth="150" text="%apptList.start" />
@@ -101,7 +100,6 @@
                               <TableColumn fx:id="repId" text="%apptList.apptId" />
                               <TableColumn fx:id="repTitle" text="%apptList.title" />
                               <TableColumn fx:id="repDescription" text="%apptList.desc" />
-                              <TableColumn fx:id="repLocation" text="%apptList.location" />
                               <TableColumn fx:id="repApptType" text="%apptList.type" />
                               <TableColumn fx:id="repStart" prefWidth="150" text="%apptList.start" />
                               <TableColumn fx:id="repEnd" prefWidth="150" text="%apptList.end" />

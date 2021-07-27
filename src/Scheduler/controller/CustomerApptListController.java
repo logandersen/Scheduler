@@ -189,7 +189,6 @@ public class CustomerApptListController implements Initializable{
             apptId.setCellValueFactory(new PropertyValueFactory<Appointment, String>("id"));
             title.setCellValueFactory(new PropertyValueFactory<Appointment, String>("title"));
             description.setCellValueFactory(new PropertyValueFactory<Appointment, String>("description"));
-            location.setCellValueFactory(new PropertyValueFactory<Appointment, String>("location"));
             contact.setCellValueFactory(new PropertyValueFactory<Appointment, String>("contactName"));
             type.setCellValueFactory(new PropertyValueFactory<Appointment, String>("type"));
             start.setCellValueFactory(new PropertyValueFactory<Appointment, String>("start"));
@@ -231,7 +230,6 @@ public class CustomerApptListController implements Initializable{
             repId.setCellValueFactory(new PropertyValueFactory<Appointment, String>("id"));
             repTitle.setCellValueFactory(new PropertyValueFactory<Appointment, String>("title"));
             repDescription.setCellValueFactory(new PropertyValueFactory<Appointment, String>("description"));
-            repLocation.setCellValueFactory(new PropertyValueFactory<Appointment, String>("location"));
             repApptType.setCellValueFactory(new PropertyValueFactory<Appointment, String>("type"));
             repStart.setCellValueFactory(new PropertyValueFactory<Appointment, String>("start"));
             repEnd.setCellValueFactory(new PropertyValueFactory<Appointment, String>("end"));
