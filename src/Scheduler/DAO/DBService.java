@@ -206,7 +206,7 @@ public class DBService {
             Appointment appt;
             if(type.equals("Phone Call")){
                 appt = new PhoneCall();
-                ((PhoneCall) appt).setPhoneNumber(rs.getString("Phone Number"));
+                ((PhoneCall) appt).setPhoneNumber(rs.getString("Phone_Number"));
             }
             else{
                 appt = new OnSiteMeeting();
@@ -313,6 +313,9 @@ public class DBService {
         if(appointment instanceof OnSiteMeeting) {
             statement.setString(3, ((OnSiteMeeting) appointment).getLocation());
         }
+        else{
+            statement.setNull(3, Types.VARCHAR);
+        }
         statement.setString(4,appointment.getType());
         var timestampFormat =DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         var startZDT = appointment.getStartZDT();
@@ -336,6 +339,9 @@ public class DBService {
         statement.setInt(13,appointment.getContactId());
         if(appointment instanceof PhoneCall){
             statement.setString(14,((PhoneCall) appointment).getPhoneNumber());
+        }
+        else{
+            statement.setNull(14, Types.VARCHAR);
         }
         statement.execute();
     }

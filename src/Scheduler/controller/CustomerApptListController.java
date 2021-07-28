@@ -71,8 +71,6 @@ public class CustomerApptListController implements Initializable{
     @FXML
     private TableColumn<Appointment, String> description;
     @FXML
-    private TableColumn<Appointment, String> location;
-    @FXML
     private TableColumn<Appointment, String> contact;
     @FXML
     private TableColumn<Appointment, String> type;
@@ -102,8 +100,6 @@ public class CustomerApptListController implements Initializable{
     private TableColumn<Appointment, String> repTitle;
     @FXML
     private TableColumn<Appointment, String> repDescription;
-    @FXML
-    private TableColumn<Appointment, String> repLocation;
     @FXML
     private TableColumn<Appointment, String> repApptType;
     @FXML

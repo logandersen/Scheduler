@@ -35,9 +35,13 @@ public class AppointmentController implements Initializable{
     @FXML
     private TextField Location;
     @FXML
+    private Label LocationLbl;
+    @FXML
     private TextField PhoneNumber;
     @FXML
-    private TextField Type;
+    private Label PhoneNumberLbl;
+    @FXML
+    private ComboBox<String> Type;
     @FXML
     private Label CreatedOn;
     @FXML
@@ -109,7 +113,8 @@ public class AppointmentController implements Initializable{
         if(appointment instanceof PhoneCall){
             PhoneNumber.setText(String.valueOf(((PhoneCall)selectedAppointment).getPhoneNumber()));
         }
-        Type.setText(String.valueOf(selectedAppointment.getType()));
+        Type.getSelectionModel().select(String.valueOf(selectedAppointment.getType()));
+        typeSelected();
         CreatedOn.setText(selectedAppointment.getCreatedDate());
         CreatedBy.setText(String.valueOf(selectedAppointment.getCreatedBy()));
         LastUpdated.setText(selectedAppointment.getLastUpdate());
@@ -171,6 +176,24 @@ public class AppointmentController implements Initializable{
         }
         return null;
     }
+    @FXML
+    private void typeSelected(){
+        String type = Type.getSelectionModel().getSelectedItem();
+        if(type.equals("Phone Call")) {
+            PhoneNumber.setVisible(true);
+            PhoneNumberLbl.setVisible(true);
+            Location.setVisible(false);
+            LocationLbl.setVisible(false);
+        }
+        else{
+            PhoneNumber.setVisible(false);
+            PhoneNumberLbl.setVisible(false);
+            Location.setVisible(true);
+            LocationLbl.setVisible(true);
+        }
+
+    }
+
     /** Action for the cancel button that calls the function to take the user back to the appointment list */
     @FXML
     private void cancel(ActionEvent event) throws IOException {
@@ -212,7 +235,7 @@ public class AppointmentController implements Initializable{
     private void update(ActionEvent event) throws Exception {
         var userName = DBService.getUserName();
         Appointment appt;
-        var type = Type.getText();
+        var type = Type.getSelectionModel().getSelectedItem();
         if(type.equals("On Site")){
             appt = new OnSiteMeeting();
             ((OnSiteMeeting)appt).setLocation(Location.getText());
@@ -245,7 +268,7 @@ public class AppointmentController implements Initializable{
     private void saveNew(ActionEvent event) throws Exception {
         var userName = DBService.getUserName();
         Appointment appt;
-        var type = Type.getText();
+        var type = Type.getSelectionModel().getSelectedItem();
         if(type.equals("On Site")){
             appt = new OnSiteMeeting();
             ((OnSiteMeeting)appt).setLocation(Location.getText());
@@ -256,7 +279,7 @@ public class AppointmentController implements Initializable{
         }
         appt.setTitle(Title.getText());
         appt.setDescription(Description.getText());
-        appt.setType(Type.getText());
+        appt.setType(type);
         var timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
         var startTime = LocalTime.parse(StartTimeCB.getValue().getTimeValue(),timeFormat);
         appt.setStart(ZonedDateTime.of(StartDate.getValue(),startTime, ZoneId.systemDefault()));
